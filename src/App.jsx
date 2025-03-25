@@ -16,9 +16,40 @@ import Bills from './routes/Bills';
 import History from './routes/History';
 import Goals from './routes/Goals';
 
-const darkTheme = createTheme({
+const purpleTheme = createTheme({
   palette: {
-    mode: 'dark',
+    secondary: {
+      main: '#ce93d8',
+      light: '#f3e5f5',
+      dark: '#ab47bc',
+      contrastText: '#47008F',
+    },
+  },
+  components: {
+    MuiBottomNavigation: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#A980B8',
+          height: '80px'
+        },
+      },
+    },
+    MuiBottomNavigationAction: {
+      styleOverrides: {
+        root: {
+          color: 'black', 
+          '&.Mui-selected': {
+            color: 'black', 
+            '& .MuiBottomNavigationAction-label': {
+              color: 'black', 
+            },
+          },
+          '& .MuiSvgIcon-root': {
+            fontSize: '2.6rem', // Larger icon size (default is 1.5rem)
+          },
+        },
+      },
+    },
   },
 });
 
@@ -54,10 +85,6 @@ function useRouteMatch(patterns) {
 }
 
 function MyBottomNavigation() {
-  // You need to provide the routes in descendant order.
-  // This means that if you have nested routes like:
-  // users, users/new, users/edit.
-  // Then the order should be ['users/add', 'users/edit', 'users'].
   const routeMatch = useRouteMatch(['/home', '/bills/:id', '/history', '/goals']);
   const currentTab = routeMatch?.pattern?.path;
 
@@ -73,9 +100,9 @@ function MyBottomNavigation() {
 
 export default function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={purpleTheme}>
       <CssBaseline />
-      <Box sx={{ width: '640px', height: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ width: '640px', height: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', bgcolor: '#f3e5f5' }}>
         <Router>
           <Box sx={{ width: '100%', flex: 1, overflow: 'auto' }}>
             <Box sx={{ p: '0 20px' }}>
@@ -84,7 +111,7 @@ export default function App() {
                 <Route path="/bills/:id" element={<Bills />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/goals" element={<Goals />} />
-                <Route path="*" element={<Home />} /> {/* Default route */}
+                <Route path="*" element={<Home />} />
               </Routes>
             </Box>
           </Box>
