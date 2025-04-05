@@ -7,43 +7,57 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
+import { Snackbar } from '@mui/material';
 
 export default function Profile() {
-    // saving data functions
-    const [formData, setFormData] = useState(() => {
-        const savedData = localStorage.getItem('profileData');
-        return savedData
-          ? JSON.parse(savedData)
-          : {
-              name: '',
-              age: '',
-              gender: '',
-              persona: '',
-            };
-      });
-    
-      const [savedData, setSavedData] = useState(null);
-      useEffect(() => {
-        const savedData = localStorage.getItem('profileData');
-        if (savedData) {
-          setSavedData(JSON.parse(savedData));
-        }
-      }, []);
-    
-      const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
-        }));
-      };
-    
-      const handleSubmit = (event) => {
-        event.preventDefault();
-        localStorage.setItem('profileData', JSON.stringify(formData));
-        setSavedData(formData);
-        alert("User profile successfully saved!");
-      };
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  // saving data functions
+  const [formData, setFormData] = useState(() => {
+    const savedData = localStorage.getItem('profileData');
+    return savedData
+      ? JSON.parse(savedData)
+      : {
+          name: '',
+          age: '',
+          gender: '',
+          persona: '',
+        };
+  });
+
+  const [savedData, setSavedData] = useState(null);
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('profileData');
+    if (savedData) {
+      setSavedData(JSON.parse(savedData));
+    }
+  }, []);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    localStorage.setItem('profileData', JSON.stringify(formData));
+    setSavedData(formData);
+    setSnackbarMessage('User profile successfully saved!');
+    setSnackbarOpen(true);
+  };
+
+  // handle closing the snackbar
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return; 
+    }
+    setSnackbarOpen(false);
+  };
 
   return (
     <Box sx={{ p: 2 }}>
@@ -69,8 +83,8 @@ export default function Profile() {
           onChange={handleChange}
           fullWidth
           required
-          
         />
+
         <FormControl fullWidth required>
           <InputLabel>Gender</InputLabel>
           <Select
@@ -102,7 +116,7 @@ export default function Profile() {
           </Select>
         </FormControl>
 
-        {/* submit button */}
+        {/* Submit button */}
         <Button
           type="submit"
           variant="contained"
@@ -116,6 +130,15 @@ export default function Profile() {
           Save Profile
         </Button>
       </Box>
+
+      {/* snackbar for success message */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000} 
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} 
+      />
     </Box>
   );
 }
