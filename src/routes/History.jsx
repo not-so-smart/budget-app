@@ -1,124 +1,138 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip,
   Button, Dialog, DialogTitle, DialogContent,
   DialogActions, IconButton, TextField,
-  Select, MenuItem, InputLabel, FormControl, Snackbar, Fab
+  Select, MenuItem, InputLabel, FormControl, Snackbar, Fab,
+  ToggleButton, ToggleButtonGroup
 } from '@mui/material';
 import { Add, Close, Delete, Edit, Undo } from '@mui/icons-material';
 
+const personaCategories = {
+  student: ['school-supplies', 'tuition', 'work', 'personal', 'entertainment'],
+  'single-working-adult': ['rent', 'groceries', 'entertainment', 'work', 'personal'],
+  'married-working-adult': ['mortgage', 'family-expenses', 'work', 'personal', 'entertainment'],
+  'married-stay-at-home-adult': ['household', 'family-expenses', 'groceries', 'work', 'personal', 'entertainment'],
+  retired: ['healthcare', 'travel', 'hobbies', 'personal', 'entertainment'],
+};
 
-//Two circles at the top of the page will display the total saved, and total spent.
-function CircleDisplay({ value, maxValue, label }) {
-  const percentage = Math.min((value / maxValue) * 100, 100);
+const defaultCategories = ['personal', 'entertainment', 'work'];
+
+const getCategoryDisplayName = (category) => {
+  switch (category) {
+    case 'school-supplies': return 'School Supplies';
+    case 'tuition': return 'Tuition';
+    case 'work': return 'Work';
+    case 'rent': return 'Rent';
+    case 'groceries': return 'Groceries';
+    case 'entertainment': return 'Entertainment';
+    case 'mortgage': return 'Mortgage';
+    case 'family-expenses': return 'Family Expenses';
+    case 'household': return 'Household';
+    case 'healthcare': return 'Healthcare';
+    case 'travel': return 'Travel';
+    case 'hobbies': return 'Hobbies';
+    case 'personal': return 'Personal';
+    default: return category.charAt(0).toUpperCase() + category.slice(1);
+  }
+};
+
+// circle display at top
+function CircleDisplay({ value, label }) {
   return (
     <Box sx={{
-      width: 100,                   
-      height: 100,                  
-      borderRadius: '50%',          
-      bgcolor: '#f5f5f5',          
-      display: 'flex',              
-      flexDirection: 'column',      
-      justifyContent: 'center',     
-      alignItems: 'center',         
-      position: 'relative',        
-        
-      '&::before': {
-        content: '""',              
-        position: 'absolute',       
-        borderRadius: '50%',        
-        width: `${percentage}%`,    
-        height: `${percentage}%`,  
-        bgcolor: label === 'Saved' ? '#cebef2' : '#e1bee7',         
-      }
+      width: 100, 
+      height: 100, 
+      borderRadius: '50%',
+      bgcolor: label === 'Saved' ? '#cebef2' : '#e1bee7',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
     }}>
-      <Box position="relative" zIndex={1} textAlign="center">      
-        <div>${value.toFixed(2)}</div>          
-        <div>{label}</div>          
-      </Box>
+      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+        ${value.toFixed(2)}
+      </Typography>
+      <Typography variant="body2">
+        {label}
+      </Typography>
     </Box>
   );
 }
 
-// Used local storage for saved spending data. If found, it's parsed, otherwise default cards returned
 const getInitialData = () => {
   const savedData = localStorage.getItem('spendingData');
-  if (savedData) {
-    const parsedData = JSON.parse(savedData);
-    return {
-      ...parsedData,
-      history: parsedData.history || []
-    };
-  }
+  if (savedData) return JSON.parse(savedData);
   
-  {/* default cards */}
-  const initialActivities = [
-    {
-      title: 'AMC Movie Ticket',
-      description: 'Received From Anna for Spiderman',
-      amount: 17.80,
-      date: '10/27/2025',
-      category: 'personal',
-      type: 'expense',
-      timestamp: new Date('2025-10-27').getTime()
-    },
-    {
-      title: 'Coach',
-      description: 'Nolita 19 in Signature Canvas Handbag',
-      amount: 119.00,
-      date: '10/27/2025',
-      category: 'personal',
-      type: 'expense',
-      timestamp: new Date('2025-10-27').getTime()
-    },
-    {
-      title: 'Paycheck Deposit',
-      description: 'Monthly salary',
-      amount: 2500.00,
-      date: '10/01/2025',
-      category: 'work',
-      type: 'saving',
-      timestamp: new Date('2025-10-01').getTime()
-    },
-  ];
-
   return {
-    activities: initialActivities,
-    savedTotal: initialActivities
-      .filter(a => a.type === 'saving')
-      .reduce((sum, activity) => sum + activity.amount, 0),
-    spentTotal: initialActivities
-      .filter(a => a.type === 'expense')
-      .reduce((sum, activity) => sum + activity.amount, 0),
-    history: [] 
+    activities: [
+      {
+        title: 'AMC Movie Ticket',
+        description: 'Received From Anna for Spiderman',
+        amount: 17.80,
+        date: '10/27/2025',
+        category: 'entertainment',
+        type: 'expense',
+        timestamp: new Date('2025-10-27').getTime()
+      },
+      {
+        title: 'Coach Handbag',
+        description: 'Nolita 19 in Signature Canvas',
+        amount: 119.00,
+        date: '10/27/2025',
+        category: 'personal',
+        type: 'expense',
+        timestamp: new Date('2025-10-27').getTime()
+      },
+      {
+        title: 'Paycheck Deposit',
+        description: 'Monthly salary',
+        amount: 2500.00,
+        date: '10/01/2025',
+        category: 'work',
+        type: 'saving',
+        timestamp: new Date('2025-10-01').getTime()
+      },
+    ],
+    savedTotal: 2500.00,
+    spentTotal: 136.80,
+    history: []
   };
 };
 
-export default function History() {
-  const [data, setData] = useState(getInitialData()); 
+export default function Categories() {
+  const [data, setData] = useState(getInitialData());
   const [open, setOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null); 
+  const [editIndex, setEditIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [view, setView] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState(defaultCategories);
+  const [activeButton, setActiveButton] = useState('recent');
 
-  // in order to update the circles, we need the sum of spent/saved for each bill
+  // persona categories
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('profileData');
+    if (savedProfile) {
+      const { persona } = JSON.parse(savedProfile);
+      setCategories(personaCategories[persona] || defaultCategories);
+    }
+  }, []);
+
+  // calculate totals
   const calculateTotals = (activities) => {
-    let spent = 0;
-    let saved = 0;
-    
-    activities.forEach(activity => {
+    return activities.reduce((acc, activity) => {
       if (activity.type === 'saving') {
-        saved += parseFloat(activity.amount.toFixed(2));
+        acc.saved += activity.amount;
       } else {
-        spent += parseFloat(activity.amount.toFixed(2));
+        acc.spent += activity.amount;
       }
-    });
-    
-    return { spent, saved };
+      return acc;
+    }, { spent: 0, saved: 0 });
   };
 
-  // Form functionality: 
-  // intialize a new/editing bill form 
+  // form state
   const [newBill, setNewBill] = useState({
     title: '',
     description: '',
@@ -128,18 +142,17 @@ export default function History() {
     type: 'expense'
   });
 
-    // updates newBill typed into form
-    const handleInputChange = (e) => {
-      const {name, value} = e.target;
-      setNewBill(prev => ({ ...prev, [name]: value}));
-    };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewBill(prev => ({ ...prev, [name]: value }));
+  };
 
-  // autosaves data to localStorage whenever it changes
+  // dave to localStorage
   useEffect(() => {
     localStorage.setItem('spendingData', JSON.stringify(data));
   }, [data]);
 
-  // resets form to blank values when opening another time
+  // dialog handlers
   const handleOpen = () => {
     setNewBill({
       title: '',
@@ -152,9 +165,9 @@ export default function History() {
     setEditIndex(null);
     setOpen(true);
   };
+
   const handleClose = () => setOpen(false);
 
-  // prepares the form for editing an existing transaciton
   const handleEditOpen = (index) => {
     const activity = data.activities[index];
     setNewBill({
@@ -165,60 +178,57 @@ export default function History() {
     setOpen(true);
   };
 
-  // Sorting funcitonality:
-  const [activeButton, setActiveButton] = useState('recent'); 
+  // sorting
   const sortOptions = [
-    {id: 'recent', label: 'Recent'},
-    {id: 'past', label: 'Past'},
-    {id: 'low-high', label: '$ -> $$$'},
-    {id: 'high-low', label: '$$$ -> $'},
+    { id: 'recent', label: 'Recent' },
+    { id: 'past', label: 'Past' },
+    { id: 'low-high', label: '$ -> $$$' },
+    { id: 'high-low', label: '$$$ -> $' },
   ];
+
   const sortActivities = () => {
-    let sortedActivities = [...data.activities];
+    let sorted = [...data.activities];
     
-    switch (activeButton) {
-      case 'recent':
-        sortedActivities.sort((a, b) => b.timestamp - a.timestamp);
-        break;
-      case 'past':
-        sortedActivities.sort((a, b) => a.timestamp - b.timestamp);
-        break;
-      case 'low-high':
-        sortedActivities.sort((a, b) => a.amount - b.amount);
-        break;
-      case 'high-low':
-        sortedActivities.sort((a, b) => b.amount - a.amount);
-        break;
-      default:
-        break;
+    // filter by view (spend/receive)
+    if (view === 'spend') {
+      sorted = sorted.filter(a => a.type === 'expense');
+    } else if (view === 'receive') {
+      sorted = sorted.filter(a => a.type === 'saving');
+    }
+    // if view is null (both unselected), show all
+    
+    // filter by category if selected
+    if (selectedCategory) {
+      sorted = sorted.filter(a => a.category === selectedCategory);
     }
     
-    return sortedActivities;
+    // apply sorting
+    switch (activeButton) {
+      case 'recent': return sorted.sort((a, b) => b.timestamp - a.timestamp);
+      case 'past': return sorted.sort((a, b) => a.timestamp - b.timestamp);
+      case 'low-high': return sorted.sort((a, b) => a.amount - b.amount);
+      case 'high-low': return sorted.sort((a, b) => b.amount - a.amount);
+      default: return sorted;
+    }
   };
 
+  // add/edit transaction
   const handleAddBill = () => {
     if (newBill.title && newBill.amount) {
-      const amount = parseFloat(newBill.amount).toFixed(2);
+      const amount = parseFloat(newBill.amount);
       if (isNaN(amount)) return;
       
-      const now = new Date();
       const activity = {
         ...newBill,
-        amount: parseFloat(amount),
-        date: now.toLocaleDateString(),
-        timestamp: now.getTime()
+        amount,
+        date: new Date().toLocaleDateString(),
+        timestamp: new Date().getTime()
       };
       
       setData(prev => {
-        const newHistory = [...prev.history, JSON.parse(JSON.stringify(prev))];
-        let newActivities;
-        
-        if (editIndex !== null) {
-          newActivities = [...prev.activities];
-          newActivities[editIndex] = activity;
-        } else {
-          newActivities = [...prev.activities, activity];
-        }
+        const newActivities = editIndex !== null
+          ? prev.activities.map((a, i) => i === editIndex ? activity : a)
+          : [...prev.activities, activity];
         
         const { spent, saved } = calculateTotals(newActivities);
         
@@ -226,7 +236,7 @@ export default function History() {
           activities: newActivities,
           savedTotal: saved,
           spentTotal: spent,
-          history: newHistory.slice(-10)
+          history: [...prev.history, JSON.parse(JSON.stringify(prev))].slice(-10)
         };
       });
       
@@ -236,10 +246,9 @@ export default function History() {
     }
   };
 
-  {/*Deleting a bill*/}
+  // delete transaction
   const handleDeleteBill = (index) => {
     setData(prev => {
-      const newHistory = [...prev.history, JSON.parse(JSON.stringify(prev))];
       const newActivities = prev.activities.filter((_, i) => i !== index);
       const { spent, saved } = calculateTotals(newActivities);
       
@@ -247,7 +256,7 @@ export default function History() {
         activities: newActivities,
         spentTotal: spent,
         savedTotal: saved,
-        history: newHistory.slice(-10)
+        history: [...prev.history, JSON.parse(JSON.stringify(prev))].slice(-10)
       };
     });
     
@@ -255,171 +264,259 @@ export default function History() {
     setSnackbarOpen(true);
   };
 
+  // undo
   const handleUndo = () => {
-    if (data.history && data.history.length > 0) {
+    if (data.history.length > 0) {
       setData(data.history[data.history.length - 1]);
       setSnackbarMessage('Undo successful!');
       setSnackbarOpen(true);
-    } 
+    }
   };
-  
-  const getCardColor = (type) => {
-    return type === 'saving' ? '#cebef2' : '#e1bee7';
+
+  // view toggle (spend/receive)
+  const handleViewChange = (event, newView) => {
+    setView(newView);
+  };
+
+  // category change
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  // get card color based on category (matches home page)
+  const getCategoryColor = (category) => {
+    switch (category) {
+      case 'school-supplies':
+      case 'personal':
+        return '#b2dfdb';
+      case 'tuition':
+      case 'entertainment':
+        return '#f8bbd0';
+      case 'work':
+      case 'rent':
+      case 'mortgage':
+      case 'household':
+      case 'healthcare':
+        return '#c5cae9';
+      case 'groceries':
+      case 'family-expenses':
+        return '#ffccbc';
+      case 'travel':
+      case 'hobbies':
+        return '#dcedc8';
+      default:
+        return '#e0e0e0';
+    }
   };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <h1>History</h1>
-      <p>Overview</p>
-      
-      {/* Circles */}
-      <Box sx= {{justifyContent: 'center', display: 'flex'}}>
-        <div style={{ display: 'flex', gap: '20px' }}> 
-          <CircleDisplay value={data.savedTotal} maxValue={1000} label="Saved" />
-          <CircleDisplay value={data.spentTotal} maxValue={1000} label="Spent" />
-        </div>
+    <Box sx={{ p: 2 }}>
+      {/* header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+          Categories
+        </Typography>
       </Box>
-      
-      
-      {/* SORT: */}
-      <Box sx= {{alignItems: 'center', display: 'flex', gap: 2, marginTop: 4}}>
-        <Box component="span" sx={{ fontWeight: 'bold'}}>
-          SORT:
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}> 
-          {sortOptions.map((option) => (
-            <Button
-              key={option.id}
-              variant={activeButton === option.id ? 'contained' : 'outlined'}
-              onClick={() => setActiveButton(option.id)}
-              sx={{
-                minWidth: '100px',
-                color: activeButton === option.id ? 'white' : 'black',
-                backgroundColor: activeButton === option.id ? 'black' : 'white',
-                borderColor: 'black',
-                '&:hover': {
-                  backgroundColor: activeButton === option.id ? '#333' : '#f5f5f5',
-                  borderColor: 'black'
-                }
-              }}
-            >
-              {option.label}
-            </Button>
-          ))}
+
+      {/* circles*/}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mb: 3 }}>
+        <CircleDisplay value={data.savedTotal} label="Saved" />
+        <CircleDisplay value={data.spentTotal} label="Spent" />
+      </Box>
+
+      {/* Toggle between spending and receiving - now allows both to be unselected */}
+      <Box sx={{ mb: 3 }}>
+        <ToggleButtonGroup
+          value={view}
+          onChange={handleViewChange}
+          sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
+        >
+          <ToggleButton
+            value="spend"
+            sx={{
+              flex: 1,
+              bgcolor: view === 'spend' ? '#ff4081' : '#f5f5f5',
+              color: view === 'spend' ? '#ffffff' : '#9e9e9e',
+              '&:hover': {
+                bgcolor: view === 'spend' ? '#ff80ab' : '#eeeeee',
+              },
+            }}
+          >
+            SPEND
+          </ToggleButton>
+          <ToggleButton
+            value="receive"
+            sx={{
+              flex: 1,
+              bgcolor: view === 'receive' ? '#ff4081' : '#f5f5f5',
+              color: view === 'receive' ? '#ffffff' : '#9e9e9e',
+              '&:hover': {
+                bgcolor: view === 'receive' ? '#ff80ab' : '#eeeeee',
+              },
+            }}
+          >
+            RECEIVE
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        {/* category dropdown */}
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>Filter by category</InputLabel>
+          <Select
+            value={selectedCategory}
+            label="Filter by category"
+            onChange={handleCategoryChange}
+          >
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.map((cat) => (
+              <MenuItem key={cat} value={cat}>
+                {getCategoryDisplayName(cat)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* sort buttons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            SORT:
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {sortOptions.map((option) => (
+              <Button
+                key={option.id}
+                variant={activeButton === option.id ? 'contained' : 'outlined'}
+                onClick={() => setActiveButton(option.id)}
+                sx={{
+                  minWidth: '100px',
+                  color: activeButton === option.id ? 'white' : 'black',
+                  backgroundColor: activeButton === option.id ? 'black' : 'white',
+                  borderColor: 'black',
+                  '&:hover': {
+                    backgroundColor: activeButton === option.id ? '#333' : '#f5f5f5',
+                    borderColor: 'black'
+                  }
+                }}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </Box>
         </Box>
       </Box>
-        
-      {/* Actions: */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+
+      {/* action buttons */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
         <Fab
           color="primary"
           onClick={handleOpen}
           sx={{
             backgroundColor: 'black',
             color: 'white',
-            '&:hover': {
-              backgroundColor: '#333',
-              transform: 'scale(1.1)'
-            },
+            '&:hover': { backgroundColor: '#333', transform: 'scale(1.1)' },
             transition: 'all 0.2s ease'
           }}
         >
           <Add />
         </Fab>
-
-      {/* Undo FAB */}
-      <Fab
-        color="secondary"
-        onClick={handleUndo}
-        disabled={data.history.length === 0}
-        sx={{
-          backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#424242',
-          color: 'white',
-          '&:hover': {
-            backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#616161',
-            transform: 'scale(1.1)'
-          },
-          transition: 'all 0.2s ease'
+        <Fab
+          color="secondary"
+          onClick={handleUndo}
+          disabled={data.history.length === 0}
+          sx={{
+            backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#424242',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#616161',
+              transform: 'scale(1.1)'
+            },
+            transition: 'all 0.2s ease'
           }}
         >
           <Undo />
         </Fab>
       </Box>
 
-      {/* Bills List */}
+      {/* activity list */}
       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
         Your Activity
       </Typography>
-      {/*The color of the card is determined by if it's a saving or an expense*/}
-      {sortActivities().map((activity, index) => (
-        <Card key={index} sx={{ 
-          mb: 2, 
-          bgcolor: getCardColor(activity.type),
-          borderRadius: '10px', 
-          position: 'relative' 
-        }}>
-          <Box sx={{ position: 'absolute', right: 4, top: 4, display: 'flex', gap: 1 }}>
-        {/*Edit icon*/}       
-           <IconButton
-              onClick={() => handleEditOpen(index)}
-              size="small"
-              sx={{
-                color: 'primary.main',
-                backgroundColor: 'rgba(255,255,255,0.7)',
-                '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.9)'
-                },
-                width: 24,
-                height: 24
-              }}
-            >
-              <Edit fontSize="small" />
-            </IconButton>
-
-        {/*Delete Icon*/}            
-          <IconButton
-              onClick={() => handleDeleteBill(index)}
-              size="small"
-              sx={{
-                color: 'error.main',
-                backgroundColor: 'rgba(255,255,255,0.7)',
-                '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.9)'
-                },
-                width: 24,
-                height: 24
-              }}
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </Box>
-          
-          <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Box>
-              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                {activity.title}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {activity.description}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                DATE: {activity.date}
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: 'right', marginTop: '15px' }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                ${activity.amount.toFixed(2)}
-              </Typography>
-              <Chip
-                label={activity.category.toUpperCase()}
-                sx={{ mt: 1, bgcolor: '#b2dfdb', color: '#000000' }}
-              />
-            </Box>
-          </CardContent>
-        </Card>
-      ))}
       
-      {/*Bill Dialog (Edit Transaction when edit chosen, else Add New transaction)*/}
+      {sortActivities().length === 0 ? (
+        <Typography sx={{ textAlign: 'center', p: 3, color: 'text.secondary' }}>
+          No transactions found for the selected filters
+        </Typography>
+      ) : (
+        sortActivities().map((activity, index) => (
+          <Card 
+            key={index} 
+            sx={{ 
+              mb: 2, 
+              bgcolor: activity.type === 'saving' ? '#cebef2' : '#e1bee7',
+              borderRadius: '10px'
+            }}
+          >
+            <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  {activity.title}
+                </Typography>
+                {activity.description && (
+                  <Typography variant="body2" color="textSecondary">
+                    {activity.description}
+                  </Typography>
+                )}
+                <Typography variant="body2" color="textSecondary">
+                  DATE: {activity.date}
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                  ${activity.amount.toFixed(2)}
+                </Typography>
+                <Chip
+                  label={getCategoryDisplayName(activity.category)}
+                  sx={{ 
+                    mt: 1, 
+                    bgcolor: getCategoryColor(activity.category),
+                    color: '#000000'
+                  }}
+                />
+                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                  <IconButton
+                    onClick={() => handleEditOpen(
+                      data.activities.findIndex(a => a.timestamp === activity.timestamp)
+                    )}
+                    size="small"
+                    sx={{
+                      color: 'primary.main',
+                      backgroundColor: 'rgba(255,255,255,0.7)',
+                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                    }}
+                  >
+                    <Edit fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDeleteBill(
+                      data.activities.findIndex(a => a.timestamp === activity.timestamp)
+                    )}
+                    size="small"
+                    sx={{
+                      color: 'error.main',
+                      backgroundColor: 'rgba(255,255,255,0.7)',
+                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                    }}
+                  >
+                    <Delete fontSize="small" />
+                  </IconButton>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        ))
+      )}
+
+      {/* add/edit dialog */}
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>
           {editIndex !== null ? 'Edit Transaction' : 'Add New Transaction'}
@@ -491,11 +588,11 @@ export default function History() {
                   label="Category"
                   onChange={handleInputChange}
                 >
-                  <MenuItem value="personal">Personal</MenuItem>
-                  <MenuItem value="entertainment">Entertainment</MenuItem>
-                  <MenuItem value="work">Work</MenuItem>
-                  <MenuItem value="household">Household</MenuItem>
-                  <MenuItem value="healthcare">Healthcare</MenuItem>
+                  {categories.map(cat => (
+                    <MenuItem key={cat} value={cat}>
+                      {getCategoryDisplayName(cat)}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>
@@ -509,7 +606,11 @@ export default function History() {
             onClick={handleAddBill}
             disabled={!newBill.title || !newBill.amount}
             startIcon={<Add />}
-            sx={{ backgroundColor: 'black', color: 'white', '&:hover': { backgroundColor: '#333' } }}
+            sx={{ 
+              backgroundColor: 'black', 
+              color: 'white', 
+              '&:hover': { backgroundColor: '#333' } 
+            }}
           >
             {editIndex !== null ? 'Update' : 'Add'} Transaction
           </Button>
