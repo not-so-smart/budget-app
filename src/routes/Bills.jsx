@@ -1,39 +1,103 @@
 import React from 'react';
-import { Avatar, Box, Card, CardContent, Typography, Button, Grid2, useTheme, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Avatar, Box, Card, CardContent, Typography, Button, Grid2, useTheme, Select, MenuItem, InputLabel, FormControl, Checkbox, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { useParams } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { grey } from '@mui/material/colors';
 
 export default function Bills() {
     // Feel free to ignore this, it's just an example of how to use the 
     // useParams hook in case we need to implement deep linking in the future
     const { id } = useParams();
-    const paidBillsCount = 5;
-    const unpaidBillsCount = 3;
     const [sortOption, setSortOption] = useState('category');
-    const bills = [
+    const [bills, setBills] = useState([
         { id: 1, name: 'Electricity Bill', amount: 120, category: 'Utilities', dueDate: '2025-04-05' },
         { id: 2, name: 'Rent', amount: 800, category: 'Housing', dueDate: '2025-04-01' },
         { id: 3, name: 'Internet Bill', amount: 60, category: 'Utilities', dueDate: '2025-04-10' },
         { id: 4, name: 'Phone Bill', amount: 45, category: 'Utilities', dueDate: '2025-04-07' },
         { id: 5, name: 'Gym Membership', amount: 40, category: 'Fitness', dueDate: '2025-04-03' },
-    ];
+    ]);    
+    const [paidBills, setPaidBills] = useState({});
+    const paidBillsCount = Object.values(paidBills).filter(Boolean).length;
+    const unpaidBillsCount = bills.length - paidBillsCount;
+
+    const [open, setOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+    const [newBill, setNewBill] = useState({
+        name: '',
+        category: '',
+        amount: '',
+        dueDate: '',
+    });
+    const [editBill, setEditBill] = useState(null);
+    const isFormValid = newBill.name && newBill.amount && newBill.dueDate && (
+        newBill.category !== 'Other' ? newBill.category : newBill.customCategory
+      );   
+
+    const handleDeleteBill = (id) => {
+        setBills(prevBills => prevBills.filter(bill => bill.id !== id));
+        setPaidBills(prev => {
+            const updated = { ...prev };
+            delete updated[id];
+            return updated;
+        });
+    };
+
+    const handleEditClick = (bill) => {
+        setEditBill(bill);  // Set the bill to be edited
+        setNewBill({
+            name: bill.name,
+            category: bill.category,
+            amount: bill.amount.toString(),
+            dueDate: bill.dueDate,
+        });
+        setEditOpen(true);  // Open edit dialog
+    };
+
+    const getRandomPastelColor = () => {
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 70%, 80%)`; // Soft pastel
+    };
+    useEffect(() => {
+        setCategoryColors(prevColors => {
+            const updatedColors = { ...prevColors };
+            bills.forEach(bill => {
+                if (!updatedColors[bill.category]) {
+                    // Assign a random pastel color if the category is new
+                    updatedColors[bill.category] = getRandomPastelColor();
+                }
+            });
+            return updatedColors;
+        });
+    }, [bills]);
+    
 
     const sortedBills = [...bills].sort((a, b) => {
         if (sortOption === 'category') {
             return a.category.localeCompare(b.category);
         } else if (sortOption === 'dueDate') {
             return new Date(a.dueDate) - new Date(b.dueDate);
+        } else if (sortOption === 'paidStatus') {
+            // Sorting by paid status (paid bills come first)
+            const paidA = paidBills[a.id] ? 1 : 0;
+            const paidB = paidBills[b.id] ? 1 : 0;
+            return paidA - paidB; // Unpaid bills come first
         }
         return 0;
     });
 
-    const categoryColors = {
-        Utilities: '#64b5f6', // Light blue for Utilities
-        Fitness: '#81c784',  // Light green for Internet
-        Housing: '#f48fb1',      // Light pink for Rent
+    const togglePaidStatus = (id) => {
+        setPaidBills(prev => ({ ...prev, [id]: !prev[id] }));
     };
+
+    const [categoryColors, setCategoryColors] = useState({
+        Utilities: '#64b5f6', // Light blue for Utilities
+        Fitness: '#81c784',  // Light green for Fitness
+        Housing: '#f48fb1', // Light pink for Housing
+    });
+    
     
     return (
         <Box sx={{ padding: 2}}>
@@ -100,6 +164,7 @@ export default function Bills() {
                     >
                         <MenuItem value="category">Category</MenuItem>
                         <MenuItem value="dueDate">Due Date</MenuItem>
+                        <MenuItem value="paidStatus">Unpaid</MenuItem>
                     </Select>
                 </FormControl>
             </Box>
@@ -122,17 +187,58 @@ export default function Bills() {
                 {/* Use a Box with column direction to stack the cards vertically */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {sortedBills.map((bill) => (
-                        <Card key={bill.id} sx={{ display: 'flex', padding: 2 }}>
+                        <Card key={bill.id} sx={{ 
+                            position: 'relative',
+                            display: 'flex',
+                            padding: 2,
+                            paddingLeft: 6,
+                            opacity: paidBills[bill.id] ? 0.5 : 1,
+                            backgroundColor: paidBills[bill.id] ? grey[200] : 'white',
+                        }}>
+                            {/* Floating Checkbox in Top-Left */}
+                            <Checkbox
+                                checked={!!paidBills[bill.id]}
+                                onChange={() => togglePaidStatus(bill.id)}
+                                color="success"
+                                sx={{
+                                    position: 'absolute',
+                                    top: 8,
+                                    left: 8,
+                                    borderRadius: '8px',
+                                    padding: '4px',
+                                }}
+                            />
+                            {/* Delete Icon */}
+                            <DeleteIcon
+                                onClick={() => handleDeleteBill(bill.id)}
+                                sx={{
+                                    position: 'absolute',
+                                    top: 8,
+                                    right: 8,
+                                    color: 'error.main',
+                                }}
+                            />
+                            <EditIcon 
+                                onClick={() => handleEditClick(bill)} 
+                                sx={{ 
+                                    position: 'absolute', 
+                                    top: 8, 
+                                    right: 40, 
+                                    color: 'primary.main' 
+                                }} 
+                            />
                             {/* Left section: Name and Amount */}
                             <Box sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6">{bill.name}</Typography>
-                                <Typography variant="body1" color="textSecondary">
+                                <Typography variant="h6" sx={{
+                                    textDecoration: paidBills[bill.id] ? 'line-through' : 'none'
+                                }}>{bill.name}</Typography>
+                                <Typography variant="body1" color="textSecondary" sx={{ textDecoration: paidBills[bill.id] ? 'line-through' : 'none' }}>
                                     Amount: ${bill.amount}
                                 </Typography>
                             </Box>
                             
                             {/* Right section: Category and Due Date */}
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' , paddingRight: 10}}>
                             {/* Category with Oval Background */}
                             <Box
                                 sx={{
@@ -164,6 +270,7 @@ export default function Bills() {
                 marginTop: 4 // Adds some space above the button
             }}>
                 <Button
+                    onClick={() => setOpen(true)}
                     sx={{
                         backgroundColor: '#ab47bc',
                         borderRadius: '50%',
@@ -185,6 +292,134 @@ export default function Bills() {
                     Add a Bill
                 </Typography>
             </Box>
+            <Dialog open={open || editOpen} onClose={() => setOpen(false)}>
+                <DialogTitle>{editOpen ? 'Edit Bill' : 'Add a New Bill'}</DialogTitle>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                    <TextField
+                    label="Name"
+                    value={newBill.name}
+                    onChange={(e) => setNewBill({ ...newBill, name: e.target.value })}
+                    required
+                    fullWidth
+                    sx={{
+                        mt:2,
+                        '& label.Mui-focused': {
+                          color: 'primary.main',
+                        },
+                        '& label .MuiFormLabel-asterisk': {
+                          color: 'red',
+                        },
+                      }}
+                    />
+                    <TextField
+                        label="Category"
+                        value={newBill.category}
+                        onChange={(e) => setNewBill({ ...newBill, category: e.target.value })}
+                        select
+                        required
+                        fullWidth
+                        sx={{
+                            '& label.Mui-focused': {
+                            color: 'primary.main',
+                            },
+                            '& label .MuiFormLabel-asterisk': {
+                            color: 'red',
+                            },
+                        }}
+                        >
+                        {['Other', ...[...new Set(bills.map(b => b.category))]].map((option) => (
+                            <MenuItem key={option} value={option}>
+                            {option}
+                            </MenuItem>
+                        ))}
+                        </TextField>
+
+                        {newBill.category === 'Other' && (
+                        <TextField
+                            label="New Category"
+                            value={newBill.customCategory || ''}
+                            onChange={(e) =>
+                            setNewBill({ ...newBill, customCategory: e.target.value })
+                            }
+                            required
+                            fullWidth
+                            sx={{
+                            '& label.Mui-focused': {
+                                color: 'primary.main',
+                            },
+                            '& label .MuiFormLabel-asterisk': {
+                                color: 'red',
+                            },
+                            }}
+                        />
+                    )}
+                    <TextField
+                    label="Amount"
+                    type="number"
+                    value={newBill.amount}
+                    onChange={(e) => setNewBill({ ...newBill, amount: e.target.value })}
+                    required
+                    fullWidth
+                    sx={{
+                        '& label.Mui-focused': {
+                          color: 'primary.main',
+                        },
+                        '& label .MuiFormLabel-asterisk': {
+                          color: 'red',
+                        },
+                      }}
+                    />
+                    <TextField
+                    label="Due Date"
+                    type="date"
+                    fullWidth
+                    required
+                    value={newBill.dueDate}
+                    onChange={(e) => setNewBill({ ...newBill, dueDate: e.target.value })}
+                    sx={{
+                        '& .MuiInputBase-input::-webkit-datetime-edit': {
+                        color: newBill.dueDate ? 'inherit' : 'transparent',
+                        },
+                        '& .MuiInputBase-input:focus::-webkit-datetime-edit': {
+                        color: 'inherit',
+                        },
+                        '& label.Mui-focused': {
+                        color: 'primary.main',
+                        },
+                        '& label .MuiFormLabel-asterisk': {
+                        color: 'red',
+                        },
+                    }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button 
+                    variant="contained"
+                    disabled={!isFormValid}
+                    onClick={() => {
+                        if (editOpen) {
+                            // Edit existing bill
+                            setBills(prevBills => prevBills.map(bill => bill.id === editBill.id ? { ...editBill, ...newBill } : bill));
+                        } else {
+                            const id = bills.length + 1;
+                            const newEntry = {
+                                 ...newBill, 
+                                 id, 
+                                 amount: parseFloat(newBill.amount),
+                                 category: newBill.category === 'Other' ? newBill.customCategory : newBill.category 
+                            };
+                            setBills([...bills, newEntry]);
+                        }
+                        setNewBill({ name: '', category: '', amount: '', dueDate: '' });
+                        setOpen(false);
+                        setEditOpen(false);
+                    }}
+                    >
+                        {editOpen ? 'Save Changes' : 'Add'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
