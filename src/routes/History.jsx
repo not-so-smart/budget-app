@@ -61,8 +61,20 @@ function CircleDisplay({ value, label }) {
 }
 
 const getInitialData = () => {
-  const savedData = localStorage.getItem('spendingData');
-  if (savedData) return JSON.parse(savedData);
+  try {
+    const savedData = localStorage.getItem('spendingData');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      return {
+        activities: parsed.activities || [],
+        savedTotal: parsed.savedTotal || 0,
+        spentTotal: parsed.spentTotal || 0,
+        history: [] // Don't load history from storage
+      };
+    }
+  } catch (e) {
+    console.error("Failed to load saved data", e);
+  }
   
   return {
     activities: [
@@ -185,24 +197,24 @@ export default function Categories() {
     { id: 'low-high', label: '$ -> $$$' },
     { id: 'high-low', label: '$$$ -> $' },
   ];
-
   const sortActivities = () => {
     let sorted = [...data.activities];
     
-    // filter by view (spend/receive)
-    if (view === 'spend') {
-      sorted = sorted.filter(a => a.type === 'expense');
-    } else if (view === 'receive') {
-      sorted = sorted.filter(a => a.type === 'saving');
+    // Filter by view (spent/saved)
+    if (view && view.length > 0) {
+      sorted = sorted.filter(a => 
+        (view.includes('spent') && a.type === 'expense') || 
+        (view.includes('saved') && a.type === 'saving')
+      );
     }
-    // if view is null (both unselected), show all
+    // When view is null or empty array, show all
     
-    // filter by category if selected
+    // Filter by category if selected
     if (selectedCategory) {
       sorted = sorted.filter(a => a.category === selectedCategory);
     }
     
-    // apply sorting
+    // Apply sorting
     switch (activeButton) {
       case 'recent': return sorted.sort((a, b) => b.timestamp - a.timestamp);
       case 'past': return sorted.sort((a, b) => a.timestamp - b.timestamp);
@@ -211,7 +223,6 @@ export default function Categories() {
       default: return sorted;
     }
   };
-
   // add/edit transaction
   const handleAddBill = () => {
     if (newBill.title && newBill.amount) {
@@ -236,7 +247,7 @@ export default function Categories() {
           activities: newActivities,
           savedTotal: saved,
           spentTotal: spent,
-          history: [...prev.history, JSON.parse(JSON.stringify(prev))].slice(-10)
+          history: [...prev.history, JSON.parse(JSON.stringify(prev))]
         };
       });
       
@@ -256,7 +267,7 @@ export default function Categories() {
         activities: newActivities,
         spentTotal: spent,
         savedTotal: saved,
-        history: [...prev.history, JSON.parse(JSON.stringify(prev))].slice(-10)
+        history: [...prev.history, JSON.parse(JSON.stringify(prev))]
       };
     });
     
@@ -324,40 +335,43 @@ export default function Categories() {
         <CircleDisplay value={data.spentTotal} label="Spent" />
       </Box>
 
-      {/* Toggle between spending and receiving - now allows both to be unselected */}
+      {/* Toggle between spending and receiving*/}
       <Box sx={{ mb: 3 }}>
-        <ToggleButtonGroup
-          value={view}
-          onChange={handleViewChange}
-          sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
-        >
-          <ToggleButton
-            value="spend"
-            sx={{
-              flex: 1,
-              bgcolor: view === 'spend' ? '#ff4081' : '#f5f5f5',
-              color: view === 'spend' ? '#ffffff' : '#9e9e9e',
-              '&:hover': {
-                bgcolor: view === 'spend' ? '#ff80ab' : '#eeeeee',
-              },
-            }}
+        {/* Fixed Toggle Button Group */}
+        <Box sx={{ mb: 3 }}>
+          <ToggleButtonGroup
+            value={view || []}
+            onChange={(event, newViews) => setView(newViews)}
+            sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
           >
-            SPEND
-          </ToggleButton>
-          <ToggleButton
-            value="receive"
-            sx={{
-              flex: 1,
-              bgcolor: view === 'receive' ? '#ff4081' : '#f5f5f5',
-              color: view === 'receive' ? '#ffffff' : '#9e9e9e',
-              '&:hover': {
-                bgcolor: view === 'receive' ? '#ff80ab' : '#eeeeee',
-              },
-            }}
-          >
-            RECEIVE
-          </ToggleButton>
-        </ToggleButtonGroup>
+            <ToggleButton
+              value="spent"
+              sx={{
+                flex: 1,
+                bgcolor: view?.includes('spent') ? '#ff4081' : '#f5f5f5',
+                color: view?.includes('spent') ? '#ffffff' : '#9e9e9e',
+                '&:hover': {
+                  bgcolor: view?.includes('spent') ? '#ff80ab' : '#eeeeee',
+                },
+              }}
+            >
+              SPENT
+            </ToggleButton>
+            <ToggleButton
+              value="saved"
+              sx={{
+                flex: 1,
+                bgcolor: view?.includes('saved') ? '#ff4081' : '#f5f5f5',
+                color: view?.includes('saved') ? '#ffffff' : '#9e9e9e',
+                '&:hover': {
+                  bgcolor: view?.includes('saved') ? '#ff80ab' : '#eeeeee',
+                },
+              }}
+            >
+              SAVED
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
 
         {/* category dropdown */}
         <FormControl fullWidth sx={{ mb: 2 }}>
