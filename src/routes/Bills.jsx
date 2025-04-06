@@ -7,19 +7,56 @@ import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import { grey } from '@mui/material/colors';
 
+export const saveToLocalStorage = (key, value) => {
+    // Don't stringify strings
+    if (typeof value === 'string') {
+        localStorage.setItem(key, value);
+    } else {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+};
+export const loadFromLocalStorage = (key, defaultValue) => {
+    const savedData = localStorage.getItem(key);
+    if (savedData) {
+        try {
+            // If it looks like JSON, try to parse it
+            if (savedData[0] === '{' || savedData[0] === '[' || savedData[0] === '"') {
+                return JSON.parse(savedData);
+            } else {
+                // Not JSON, return as is
+                return savedData;
+            }
+        } catch {
+            // If parsing fails, return the raw string
+            return savedData;
+        }
+    }
+    return defaultValue;
+};
 export default function Bills() {
     // Feel free to ignore this, it's just an example of how to use the 
     // useParams hook in case we need to implement deep linking in the future
     const { id } = useParams();
-    const [sortOption, setSortOption] = useState('category');
-    const [bills, setBills] = useState([
+
+    const [sortOption, setSortOption] = useState(() => {
+        const initial = loadFromLocalStorage('sortOption', 'category');
+        console.log('Initial sortOption value:', initial);
+        return initial;
+      });
+    const [bills, setBills] = useState(loadFromLocalStorage('bills', [
         { id: 1, name: 'Electricity Bill', amount: 120, category: 'Utilities', dueDate: '2025-04-05' },
         { id: 2, name: 'Rent', amount: 800, category: 'Housing', dueDate: '2025-04-01' },
         { id: 3, name: 'Internet Bill', amount: 60, category: 'Utilities', dueDate: '2025-04-10' },
         { id: 4, name: 'Phone Bill', amount: 45, category: 'Utilities', dueDate: '2025-04-07' },
         { id: 5, name: 'Gym Membership', amount: 40, category: 'Fitness', dueDate: '2025-04-03' },
-    ]);    
-    const [paidBills, setPaidBills] = useState({});
+    ]));
+    const [paidBills, setPaidBills] = useState(loadFromLocalStorage('paidBills', {}));
+    const [categoryColors, setCategoryColors] = useState(loadFromLocalStorage('categoryColors', {
+        Utilities: '#64b5f6',
+        Fitness: '#81c784',
+        Housing: '#f48fb1',
+    }));
+
     const paidBillsCount = Object.values(paidBills).filter(Boolean).length;
     const unpaidBillsCount = bills.length - paidBillsCount;
 
@@ -92,12 +129,26 @@ export default function Bills() {
         setPaidBills(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const [categoryColors, setCategoryColors] = useState({
-        Utilities: '#64b5f6', // Light blue for Utilities
-        Fitness: '#81c784',  // Light green for Fitness
-        Housing: '#f48fb1', // Light pink for Housing
-    });
-    
+    useEffect(() => {
+        const savedBills = loadFromLocalStorage('bills', []);
+        const savedPaidBills = loadFromLocalStorage('paidBills', {});
+        const savedSortOption = loadFromLocalStorage('sortOption', 'category');
+        const savedCategoryColors = loadFromLocalStorage('categoryColors', {});
+
+        if (savedBills.length > 0) setBills(savedBills);
+        if (Object.keys(savedPaidBills).length > 0) setPaidBills(savedPaidBills);
+        setSortOption(savedSortOption);
+        setCategoryColors(savedCategoryColors);
+    }, []);
+
+    useEffect(() => {
+        saveToLocalStorage('bills', bills);
+        saveToLocalStorage('paidBills', paidBills);
+        saveToLocalStorage('sortOption', sortOption);
+        saveToLocalStorage('categoryColors', categoryColors);
+    }, [bills, paidBills, sortOption, categoryColors]);
+
+
     
     return (
         <Box sx={{ padding: 2}}>
@@ -402,7 +453,7 @@ export default function Bills() {
                             // Edit existing bill
                             setBills(prevBills => prevBills.map(bill => bill.id === editBill.id ? { ...editBill, ...newBill } : bill));
                         } else {
-                            const id = bills.length + 1;
+                            const id = Date.now();
                             const newEntry = {
                                  ...newBill, 
                                  id, 
