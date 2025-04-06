@@ -175,10 +175,10 @@ export default function Home() {
             value="spend"
             sx={{
               flex: 1,
-              bgcolor: view === 'spend' ? '#e0e0e0' : '#ce93d8', 
-              color: view === 'spend' ? '#ffffff' : '#000000', 
+              bgcolor: view === 'spend' ? '#ff4081' : '#f5f5f5', 
+              color: view === 'spend' ? '#ffffff' : '#9e9e9e', 
               '&:hover': {
-                bgcolor: view === 'spend' ? '#ab47bc' : '#ce93d8', 
+                bgcolor: view === 'spend' ? '#ff80ab' : '#eeeeee', 
               },
             }}
           >
@@ -188,10 +188,10 @@ export default function Home() {
             value="receive"
             sx={{
               flex: 1,
-              bgcolor: view === 'receive' ? '#e0e0e0' : '#ce93d8', 
-              color: view === 'receive' ? '#ffffff' : '#000000',
+              bgcolor: view === 'receive' ? '#ff4081' : '#f5f5f5', 
+              color: view === 'receive' ? '#ffffff' : '#9e9e9e',
               '&:hover': {
-                bgcolor: view === 'receive' ? '#ab47bc' : '#ce93d8', 
+                bgcolor: view === 'receive' ? '#ff80ab' : '#eeeeee', 
               },
             }}
           >
