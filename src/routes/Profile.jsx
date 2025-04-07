@@ -45,8 +45,20 @@ export default function Profile() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    //for bills stuff
+    const oldData = JSON.parse(localStorage.getItem('profileData') || '{}');
+    const oldPersona = oldData.persona;
     localStorage.setItem('profileData', JSON.stringify(formData));
+    if (oldPersona && oldPersona !== formData.persona) {
+      localStorage.setItem('personaChanged', 'true');
+      localStorage.setItem('lastPersona', oldPersona); // store what it was before
+    } else {
+      localStorage.setItem('personaChanged', 'false');
+    }
     setSavedData(formData);
+  
+
     setSnackbarMessage('User profile successfully saved!');
     setSnackbarOpen(true);
   };

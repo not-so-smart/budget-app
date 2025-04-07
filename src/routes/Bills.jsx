@@ -37,19 +37,82 @@ export default function Bills() {
     // Feel free to ignore this, it's just an example of how to use the 
     // useParams hook in case we need to implement deep linking in the future
     const { id } = useParams();
+    const defaultBillsForPersona = {
+        student: [
+          { id: 1, name: 'Tuition Fees', amount: 5000, category: 'Education', dueDate: '2025-08-01' },
+          { id: 2, name: 'Textbooks', amount: 300, category: 'Education', dueDate: '2025-08-10' },
+          { id: 3, name: 'Living Expenses', amount: 800, category: 'Living', dueDate: '2025-04-05' },
+          { id: 4, name: 'Student Loan Payment', amount: 200, category: 'Loans', dueDate: '2025-05-15' },
+        ],
+        'single-working-adult': [
+          { id: 1, name: 'Rent', amount: 1200, category: 'Housing', dueDate: '2025-04-01' },
+          { id: 2, name: 'Groceries', amount: 250, category: 'Living', dueDate: '2025-04-03' },
+          { id: 3, name: 'Bar/Date Night', amount: 80, category: 'Entertainment', dueDate: '2025-04-07' },
+          { id: 4, name: 'Gym Membership', amount: 50, category: 'Fitness', dueDate: '2025-04-15' },
+          { id: 5, name: 'Eating Out', amount: 100, category: 'Entertainment', dueDate: '2025-04-12' },
+        ],
+        'married-working-adult': [
+          { id: 1, name: 'Rent/Mortgage', amount: 1500, category: 'Housing', dueDate: '2025-04-01' },
+          { id: 2, name: 'Utilities', amount: 300, category: 'Utilities', dueDate: '2025-04-05' },
+          { id: 3, name: 'Internet Bill', amount: 80, category: 'Utilities', dueDate: '2025-04-10' },
+          { id: 4, name: 'Honeymoon Fund', amount: 500, category: 'Leisure', dueDate: '2025-05-01' },
+          { id: 5, name: 'Health Insurance', amount: 200, category: 'Insurance', dueDate: '2025-04-07' },
+        ],
+        'married-stay-at-home-adult': [
+          { id: 1, name: 'Groceries', amount: 300, category: 'Living', dueDate: '2025-04-03' },
+          { id: 2, name: 'Utilities', amount: 100, category: 'Utilities', dueDate: '2025-04-05' },
+          { id: 3, name: 'Home Maintenance', amount: 150, category: 'Home', dueDate: '2025-04-10' },
+          { id: 4, name: 'Childcare', amount: 400, category: 'Family', dueDate: '2025-04-01' },
+          { id: 5, name: 'Insurance', amount: 150, category: 'Insurance', dueDate: '2025-04-07' },
+        ],
+        retired: [
+          { id: 1, name: 'Hospital Bills', amount: 200, category: 'Health', dueDate: '2025-04-01' },
+          { id: 2, name: 'Medicine Costs', amount: 100, category: 'Health', dueDate: '2025-04-05' },
+          { id: 3, name: 'Pension Fund', amount: 1200, category: 'Retirement', dueDate: '2025-04-10' },
+          { id: 4, name: 'Utility Bills', amount: 150, category: 'Utilities', dueDate: '2025-04-15' },
+          { id: 5, name: 'Entertainment (Senior Discounts)', amount: 50, category: 'Leisure', dueDate: '2025-04-20' },
+        ],
+    };
+    //this may need to be changed. i need to dynamically check when persona changes in the submit on profile page
+    const [bills, setBills] = useState(() => {
+        const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+        const persona = profileData.persona || 'student';
+      
+        const personaChanged = localStorage.getItem('personaChanged') === 'true';
+      
+        const savedBills = JSON.parse(localStorage.getItem('billData') || 'null');
+      
+        if (personaChanged) {
+          console.log("persona changed")
+          const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['student'];
+          localStorage.setItem('billData', JSON.stringify(defaultBills));
+          localStorage.setItem('lastPersona', persona); // update current as new "last"
+          localStorage.setItem('personaChanged', 'false'); // reset flag
+          return defaultBills;
+        }
+      
+        return savedBills || (defaultBillsForPersona[persona] || {});
+      });
+
+      useEffect(() => {
+        localStorage.setItem('billData', JSON.stringify(bills));
+      }, [bills]);
+
+      
+      
 
     const [sortOption, setSortOption] = useState(() => {
         const initial = loadFromLocalStorage('sortOption', 'category');
         console.log('Initial sortOption value:', initial);
         return initial;
       });
-    const [bills, setBills] = useState(loadFromLocalStorage('bills', [
-        { id: 1, name: 'Electricity Bill', amount: 120, category: 'Utilities', dueDate: '2025-04-05' },
-        { id: 2, name: 'Rent', amount: 800, category: 'Housing', dueDate: '2025-04-01' },
-        { id: 3, name: 'Internet Bill', amount: 60, category: 'Utilities', dueDate: '2025-04-10' },
-        { id: 4, name: 'Phone Bill', amount: 45, category: 'Utilities', dueDate: '2025-04-07' },
-        { id: 5, name: 'Gym Membership', amount: 40, category: 'Fitness', dueDate: '2025-04-03' },
-    ]));
+    // const [bills, setBills] = useState(loadFromLocalStorage('bills', [
+    //     { id: 1, name: 'Electricity Bill', amount: 120, category: 'Utilities', dueDate: '2025-04-05' },
+    //     { id: 2, name: 'Rent', amount: 800, category: 'Housing', dueDate: '2025-04-01' },
+    //     { id: 3, name: 'Internet Bill', amount: 60, category: 'Utilities', dueDate: '2025-04-10' },
+    //     { id: 4, name: 'Phone Bill', amount: 45, category: 'Utilities', dueDate: '2025-04-07' },
+    //     { id: 5, name: 'Gym Membership', amount: 40, category: 'Fitness', dueDate: '2025-04-03' },
+    // ]));
     const [paidBills, setPaidBills] = useState(loadFromLocalStorage('paidBills', {}));
     const [categoryColors, setCategoryColors] = useState(loadFromLocalStorage('categoryColors', {
         Utilities: '#64b5f6',
