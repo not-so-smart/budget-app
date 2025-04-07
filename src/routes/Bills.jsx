@@ -406,7 +406,10 @@ export default function Bills() {
                     Add a Bill
                 </Typography>
             </Box>
-            <Dialog open={open || editOpen} onClose={() => setOpen(false)}>
+            <Dialog open={open || editOpen} onClose={() => {
+                setOpen(false);
+                setEditOpen(false);
+                }}>
                 <DialogTitle>{editOpen ? 'Edit Bill' : 'Add a New Bill'}</DialogTitle>
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
                     <TextField
@@ -507,7 +510,10 @@ export default function Bills() {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button onClick={() => {
+                        setOpen(false);
+                        setEditOpen(false);
+                        }}>Cancel</Button>
                     <Button 
                     variant="contained"
                     disabled={!isFormValid}
