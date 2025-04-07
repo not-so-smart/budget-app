@@ -178,7 +178,7 @@ export default function Bills() {
         if (sortOption === 'category') {
             return a.category.localeCompare(b.category);
         } else if (sortOption === 'dueDate') {
-            return new Date(a.dueDate) - new Date(b.dueDate);
+            return new Date(b.dueDate) - new Date(a.dueDate);
         } else if (sortOption === 'paidStatus') {
             // Sorting by paid status (paid bills come first)
             const paidA = paidBills[a.id] ? 1 : 0;
@@ -357,7 +357,7 @@ export default function Bills() {
                             <Box
                                 sx={{
                                     backgroundColor: categoryColors[bill.category] || '#cfcfcf', // Default to gray if no category match
-                                    color: 'white',
+                                    color: 'black',
                                     padding: '4px 12px', // Padding to make the text inside spacious
                                     borderRadius: '20px', // This makes the background oval/pill-shaped
                                     display: 'inline-block', // Ensures the background wraps the text only
