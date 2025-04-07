@@ -7,6 +7,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import InfoIcon from '@mui/icons-material/Info';
 import { Snackbar } from '@mui/material';
 
 export default function Profile() {
@@ -20,8 +22,8 @@ export default function Profile() {
       ? JSON.parse(savedData)
       : {
           name: '',
-          age: '',
-          gender: '',
+          habits: '',
+          literacy: '',
           persona: '',
         };
   });
@@ -51,10 +53,16 @@ export default function Profile() {
     setSnackbarOpen(true);
   };
 
+  // Handle button click for showing "Implementation coming soon"
+  const handleInfoClick = () => {
+    setSnackbarMessage('Implementation coming soon');
+    setSnackbarOpen(true);
+  };
+
   // handle closing the snackbar
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
-      return; 
+      return;
     }
     setSnackbarOpen(false);
   };
@@ -75,31 +83,6 @@ export default function Profile() {
           required
         />
 
-        <TextField
-          label="Age"
-          name="age"
-          type="number"
-          value={formData.age}
-          onChange={handleChange}
-          fullWidth
-          required
-        />
-
-        <FormControl fullWidth required>
-          <InputLabel>Gender</InputLabel>
-          <Select
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            label="Gender"
-          >
-            <MenuItem value="">Select</MenuItem>
-            <MenuItem value="male">Male</MenuItem>
-            <MenuItem value="female">Female</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
-          </Select>
-        </FormControl>
-
         <FormControl fullWidth required>
           <InputLabel>Persona</InputLabel>
           <Select
@@ -115,6 +98,46 @@ export default function Profile() {
             <MenuItem value="retired">Retired</MenuItem>
           </Select>
         </FormControl>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel>Spending Habits</InputLabel>
+            <Select
+              name="habits"
+              value={formData.habits}
+              onChange={handleChange}
+              label="Spending Habits"
+            >
+              <MenuItem value="save">I save most of it</MenuItem>
+              <MenuItem value="balanced">I save and spend equally</MenuItem>
+              <MenuItem value="lavish">I spend more than I save</MenuItem>
+            </Select>
+          </FormControl>
+          <IconButton onClick={handleInfoClick} size="small" title="More Info">
+            <InfoIcon />
+          </IconButton>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel>Financial Literacy</InputLabel>
+            <Select
+              name="literacy"
+              value={formData.literacy}
+              onChange={handleChange}
+              label="Financial Literacy"
+            >
+              <MenuItem value="beginner">I'm new to this</MenuItem>
+              <MenuItem value="intermediate">I know the basics</MenuItem>
+              <MenuItem value="advanced">I'm very financially literate</MenuItem>
+            </Select>
+          </FormControl>
+          <IconButton onClick={handleInfoClick} size="small" title="More Info">
+            <InfoIcon />
+          </IconButton>
+        </Box>
+
+        
 
         {/* Submit button */}
         <Button
@@ -134,10 +157,10 @@ export default function Profile() {
       {/* snackbar for success message */}
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={3000} 
+        autoHideDuration={3000}
         onClose={handleSnackbarClose}
         message={snackbarMessage}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} 
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
     </Box>
   );

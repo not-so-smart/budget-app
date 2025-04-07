@@ -41,7 +41,7 @@ const baseRecentActivity = [
     amount: '$235.00',
     goal: '$799.00',
     date: '10/27/2025',
-    category: 'personal', 
+    category: 'personal',
   },
   {
     title: 'Movie Ticket @ AMC',
@@ -49,14 +49,14 @@ const baseRecentActivity = [
     amount: '$17.89',
     description: 'Spider with Anna',
     date: '10/20/2025',
-    category: 'entertainment', 
+    category: 'entertainment',
   },
   {
     title: 'Income -> ACS',
     type: 'SAVINGS',
     amount: '$2000.00',
     date: '10/15/2025',
-    category: 'work', 
+    category: 'work',
   },
 ];
 
@@ -98,15 +98,17 @@ export default function Home() {
   const [view, setView] = React.useState('spend');
   const [category, setCategory] = React.useState('');
   const [categories, setCategories] = React.useState(defaultCategories);
-  const [recentActivity] = React.useState(baseRecentActivity); 
+  const [recentActivity] = React.useState(baseRecentActivity);
+  const [userName, setUserName] = useState(''); // State to hold the user's name
 
-  // load persona from localStorage and set categories for dropdown 
+  // Load persona and name from localStorage
   useEffect(() => {
     const savedProfile = localStorage.getItem('profileData');
     if (savedProfile) {
-      const { persona } = JSON.parse(savedProfile);
+      const { persona, name } = JSON.parse(savedProfile);
       const newCategories = personaCategories[persona] || defaultCategories;
       setCategories(newCategories);
+      setUserName(name); // Set the user's name from localStorage
     }
   }, []);
 
@@ -120,7 +122,7 @@ export default function Home() {
     setCategory(event.target.value);
   };
 
-  // chart legend
+  // Chart legend component
   const ChartKey = () => (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
@@ -138,12 +140,15 @@ export default function Home() {
     </Box>
   );
 
+  // Determine the progress title based on whether a name is set
+  const progressTitle = userName ? `${userName}'s Progress` : 'Your Progress';
+
   return (
     <Box sx={{ p: 2 }}>
       {/* header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-          Your Progress
+          {progressTitle}
         </Typography>
       </Box>
 
@@ -175,10 +180,10 @@ export default function Home() {
             value="spend"
             sx={{
               flex: 1,
-              bgcolor: view === 'spend' ? '#e0e0e0' : '#ce93d8', 
-              color: view === 'spend' ? '#ffffff' : '#000000', 
+              bgcolor: view === 'spend' ? '#e0e0e0' : '#ce93d8',
+              color: view === 'spend' ? '#ffffff' : '#000000',
               '&:hover': {
-                bgcolor: view === 'spend' ? '#ab47bc' : '#ce93d8', 
+                bgcolor: view === 'spend' ? '#ab47bc' : '#ce93d8',
               },
             }}
           >
@@ -188,17 +193,17 @@ export default function Home() {
             value="receive"
             sx={{
               flex: 1,
-              bgcolor: view === 'receive' ? '#e0e0e0' : '#ce93d8', 
+              bgcolor: view === 'receive' ? '#e0e0e0' : '#ce93d8',
               color: view === 'receive' ? '#ffffff' : '#000000',
               '&:hover': {
-                bgcolor: view === 'receive' ? '#ab47bc' : '#ce93d8', 
+                bgcolor: view === 'receive' ? '#ab47bc' : '#ce93d8',
               },
             }}
           >
             RECEIVE
           </ToggleButton>
         </ToggleButtonGroup>
-        
+
         {/* category dropdown */}
         <FormControl fullWidth>
           <InputLabel>Choose a category to see its chart</InputLabel>
