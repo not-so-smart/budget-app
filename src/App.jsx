@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -7,15 +6,20 @@ import HomeIcon from '@mui/icons-material/Home';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import HistoryIcon from '@mui/icons-material/History';
 import FlagIcon from '@mui/icons-material/Flag';
-import { MemoryRouter, Route, Routes, Link, matchPath, useLocation, StaticRouter } from 'react-router';
+import PersonIcon from '@mui/icons-material/Person';
+import { MemoryRouter, Route, Routes, Link, matchPath, useLocation } from 'react-router';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 import Home from './routes/Home';
 import Bills from './routes/Bills';
 import History from './routes/History';
 import Goals from './routes/Goals';
+import Profile from './routes/Profile'; 
 
+// theme
 const purpleTheme = createTheme({
   palette: {
     secondary: {
@@ -30,45 +34,28 @@ const purpleTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#A980B8',
-          height: '80px'
+          height: '80px',
         },
       },
     },
     MuiBottomNavigationAction: {
       styleOverrides: {
         root: {
-          color: 'black', 
+          color: 'black',
           '&.Mui-selected': {
-            color: 'black', 
+            color: 'black',
             '& .MuiBottomNavigationAction-label': {
-              color: 'black', 
+              color: 'black',
             },
           },
           '& .MuiSvgIcon-root': {
-            fontSize: '2.6rem', // Larger icon size (default is 1.5rem)
+            fontSize: '2.6rem',
           },
         },
       },
     },
   },
 });
-
-function Router(props) {
-  const { children } = props;
-  if (typeof window === 'undefined') {
-    return <StaticRouter location="/home">{children}</StaticRouter>;
-  }
-
-  return (
-    <MemoryRouter initialEntries={['/home']} initialIndex={0}>
-      {children}
-    </MemoryRouter>
-  );
-}
-
-Router.propTypes = {
-  children: PropTypes.node,
-};
 
 function useRouteMatch(patterns) {
   const { pathname } = useLocation();
@@ -84,8 +71,9 @@ function useRouteMatch(patterns) {
   return null;
 }
 
+// navbar + routing
 function MyBottomNavigation() {
-  const routeMatch = useRouteMatch(['/home', '/bills/:id', '/history', '/goals']);
+  const routeMatch = useRouteMatch(['/home', '/bills/:id', '/history', '/goals', '/profile']);
   const currentTab = routeMatch?.pattern?.path;
 
   return (
@@ -94,7 +82,46 @@ function MyBottomNavigation() {
       <BottomNavigationAction label="Bills" value="/bills/:id" to="/bills/1" component={Link} icon={<ReceiptIcon />} />
       <BottomNavigationAction label="History" value="/history" to="/history" component={Link} icon={<HistoryIcon />} />
       <BottomNavigationAction label="Goals" value="/goals" to="/goals" component={Link} icon={<FlagIcon />} />
+      <BottomNavigationAction label="Profile" value="/profile" to="/profile" component={Link} icon={<PersonIcon />} />
     </BottomNavigation>
+  );
+}
+
+
+function AppContent() {
+  // don't show top profile button on profile page
+  const location = useLocation(); 
+  const showProfileIcon = location.pathname !== '/profile';
+
+  return (
+    <>
+      {showProfileIcon && (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+          <Tooltip title="Profile">
+            <IconButton component={Link} to="/profile" sx={{ bgcolor: '#ffffff', '&:hover': { bgcolor: '#e0e0e0' } }}>
+              <PersonIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
+
+      {/* routing */}
+      <Box sx={{ width: '100%', flex: 1, overflow: 'auto' }}>
+        <Box sx={{ p: '0 20px' }}>
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/bills/:id" element={<Bills />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/goals" element={<Goals />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </Box>
+      </Box>
+      <Box sx={{ width: '100%' }}>
+        <MyBottomNavigation />
+      </Box>
+    </>
   );
 }
 
@@ -103,22 +130,9 @@ export default function App() {
     <ThemeProvider theme={purpleTheme}>
       <CssBaseline />
       <Box sx={{ width: '640px', height: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', bgcolor: '#f3e5f5' }}>
-        <Router>
-          <Box sx={{ width: '100%', flex: 1, overflow: 'auto' }}>
-            <Box sx={{ p: '0 20px' }}>
-              <Routes>
-                <Route path="/home" element={<Home />} />
-                <Route path="/bills/:id" element={<Bills />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/goals" element={<Goals />} />
-                <Route path="*" element={<Home />} />
-              </Routes>
-            </Box>
-          </Box>
-          <Box sx={{ width: '100%' }}>
-            <MyBottomNavigation />
-          </Box>
-        </Router>
+        <MemoryRouter initialEntries={['/home']} initialIndex={0}>
+          <AppContent />
+        </MemoryRouter>
       </Box>
     </ThemeProvider>
   );
