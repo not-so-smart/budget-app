@@ -1,8 +1,9 @@
 import React from 'react';
-import { Avatar, Box, Card, CardContent, Typography, Button, Grid2, useTheme, Select, MenuItem, InputLabel, FormControl, Checkbox, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Avatar, Box, Card, CardContent, Typography, Button, Grid2, useTheme, Select, MenuItem, InputLabel, FormControl, Checkbox, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Stack  } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import UndoIcon from '@mui/icons-material/Undo';
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import { grey } from '@mui/material/colors';
@@ -132,17 +133,32 @@ export default function Bills() {
         dueDate: '',
     });
     const [editBill, setEditBill] = useState(null);
+    const [deletedBills, setDeletedBills] = useState([]);
+
     const isFormValid = newBill.name && newBill.amount && newBill.dueDate && (
         newBill.category !== 'Other' ? newBill.category : newBill.customCategory
       );   
 
-    const handleDeleteBill = (id) => {
-        setBills(prevBills => prevBills.filter(bill => bill.id !== id));
-        setPaidBills(prev => {
-            const updated = { ...prev };
-            delete updated[id];
-            return updated;
-        });
+      const handleDeleteBill = (billId) => {
+        const billToDelete = bills.find((b) => b.id === billId);
+        if (!billToDelete) return;
+    
+        // Push the deleted bill to the top of the stack
+        setDeletedBills(prev => [billToDelete, ...prev]);
+    
+        // Remove the bill from current list
+        const updatedBills = bills.filter((b) => b.id !== billId);
+        setBills(updatedBills);
+        localStorage.setItem('bills', JSON.stringify(updatedBills));
+    };
+    
+
+    const handleUndoDelete = () => {
+        if (deletedBills.length === 0) return;
+    
+        const [restoredBill, ...rest] = deletedBills;
+        setBills(prev => [...prev, restoredBill]);
+        setDeletedBills(rest);
     };
 
     const handleEditClick = (bill) => {
@@ -376,36 +392,67 @@ export default function Bills() {
                     ))}
                 </Box>
             </Box>
-            {/*add button*/}
-            <Box sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                marginTop: 4 // Adds some space above the button
-            }}>
-                <Button
-                    onClick={() => setOpen(true)}
-                    sx={{
-                        backgroundColor: '#ab47bc',
-                        borderRadius: '50%',
-                        width: 60, // Adjust size
-                        height: 60, // Adjust size
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        boxShadow: 3, // Optional: Adds some shadow for effect
-                        '&:hover': {
-                            backgroundColor: 'primary.dark', // Darken on hover
-                        },
-                    }}
-                    aria-label="add bill"
+            <Stack 
+                direction="row" 
+                spacing={4} 
+                justifyContent="center" 
+                alignItems="center" 
+                sx={{ mt: 4 }}
                 >
-                    <AddIcon sx={{ color: 'white' }} />
-                </Button>
-                <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
-                    Add a Bill
-                </Typography>
-            </Box>
+                    {/*add button*/}
+                    <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        marginTop: 4 // Adds some space above the button
+                    }}>
+                        <Button
+                            onClick={() => setOpen(true)}
+                            sx={{
+                                backgroundColor: '#ab47bc',
+                                borderRadius: '50%',
+                                width: 60, // Adjust size
+                                height: 60, // Adjust size
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                boxShadow: 3, // Optional: Adds some shadow for effect
+                                '&:hover': {
+                                    backgroundColor: 'primary.dark', // Darken on hover
+                                },
+                            }}
+                            aria-label="add bill"
+                        >
+                            <AddIcon sx={{ color: 'white' }} />
+                        </Button>
+                        <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
+                            Add a Bill
+                        </Typography>
+                    </Box>
+                    {/* Undo Button */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <IconButton
+                            onClick={handleUndoDelete}
+                            sx={{
+                            backgroundColor: deletedBills.length === 0 ? '#e0e0e0' : '#f44336',
+                            borderRadius: '50%',
+                            width: 60,
+                            height: 60,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            boxShadow: 3,
+                            }}
+                            aria-label="undo delete"
+                        >
+                            <UndoIcon sx={{ color: 'white' }} />
+                        </IconButton>
+                        <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
+                            Undo Delete
+                        </Typography>
+                        </Box>
+                </Stack>
+                
             <Dialog open={open || editOpen} onClose={() => {
                 setOpen(false);
                 setEditOpen(false);
