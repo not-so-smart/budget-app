@@ -13,24 +13,24 @@ import Snackbar from '@mui/material/Snackbar';
 
 export default function Goals() {
     // State for savings goals
-        { id: 1, name: 'Essentials', value: 50, target: 250 },
-        { id: 2, name: 'Personal', value: 30, target: 100 },
-        { id: 3, name: 'Work', value: 70, target: 200 },
-        { id: 4, name: 'Other', value: 20, target: 50 },
     const [savingsGoals, setSavingsGoals] = useState(() => {
         const savedSavings = localStorage.getItem('savingsGoals');
         return savedSavings ? JSON.parse(savedSavings) : [
+            { id: 1, name: 'Emergency Fund', value: 1000, target: 1000 },
+            { id: 2, name: 'Vacation', value: 300, target: 2000 },
+            { id: 3, name: 'Home Renovation', value: 1500, target: 5000 },
+            { id: 4, name: 'Car Maintenance', value: 200, target: 800 },
         ];
     });
 
     // State for spending goals
-        { id: 1, name: 'Entertainment', value: 50, target: 250 },
-        { id: 2, name: 'Personal', value: 30, target: 100 },
-        { id: 3, name: 'Work', value: 70, target: 200 },
-        { id: 4, name: 'Childcare', value: 20, target: 50 },
     const [spendingGoals, setSpendingGoals] = useState(() => {
         const savedSpending = localStorage.getItem('spendingGoals');
         return savedSpending ? JSON.parse(savedSpending) : [
+            { id: 1, name: 'Groceries', value: 200, target: 500 },
+            { id: 2, name: 'Dining Out', value: 150, target: 100 },
+            { id: 3, name: 'Transportation', value: 150, target: 400 },
+            { id: 4, name: 'Entertainment', value: 50, target: 200 },
         ];
     });
 
