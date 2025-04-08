@@ -12,7 +12,7 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-// chart data
+// Chart data
 const schoolSuppliesData = [
   { month: 'JAN', amount: 50 },
   { month: 'FEB', amount: 80 },
@@ -117,7 +117,6 @@ const householdData = [
   { month: 'MAY', amount: 610 },
 ];
 
-// default chart data
 const defaultChartData = [
   { month: 'JAN', amount: 200 },
   { month: 'FEB', amount: 250 },
@@ -126,7 +125,7 @@ const defaultChartData = [
   { month: 'MAY', amount: 150 },
 ];
 
-// persona-based categories
+// Persona-based categories
 const personaCategories = {
   student: ['school-supplies', 'tuition', 'work', 'personal', 'entertainment'],
   'single-working-adult': ['rent', 'groceries', 'entertainment', 'work', 'personal'],
@@ -135,14 +134,13 @@ const personaCategories = {
   retired: ['healthcare', 'travel', 'hobbies', 'personal', 'entertainment'],
 };
 
-// default categories
 const defaultCategories = ['personal', 'entertainment', 'work'];
 
-// sample recent activity
+// Sample recent activity
 const baseRecentActivity = [
   {
     title: 'Money For iPhone16',
-    status: 'IN PROGRESS',
+    type: 'SAVINGS',
     amount: '$235.00',
     goal: '$799.00',
     date: '10/27/2025',
@@ -165,41 +163,27 @@ const baseRecentActivity = [
   },
 ];
 
-// map category values to display names
+// Map category values to display names
 const getCategoryDisplayName = (category) => {
   switch (category) {
-    case 'school-supplies':
-      return 'School Supplies';
-    case 'tuition':
-      return 'Tuition';
-    case 'work':
-      return 'Work';
-    case 'rent':
-      return 'Rent';
-    case 'groceries':
-      return 'Groceries';
-    case 'entertainment':
-      return 'Entertainment';
-    case 'mortgage':
-      return 'Mortgage';
-    case 'family-expenses':
-      return 'Family Expenses';
-    case 'household':
-      return 'Household';
-    case 'healthcare':
-      return 'Healthcare';
-    case 'travel':
-      return 'Travel';
-    case 'hobbies':
-      return 'Hobbies';
-    case 'personal':
-      return 'Personal';
-    default:
-      return category.charAt(0).toUpperCase() + category.slice(1);
+    case 'school-supplies': return 'School Supplies';
+    case 'tuition': return 'Tuition';
+    case 'work': return 'Work';
+    case 'rent': return 'Rent';
+    case 'groceries': return 'Groceries';
+    case 'entertainment': return 'Entertainment';
+    case 'mortgage': return 'Mortgage';
+    case 'family-expenses': return 'Family Expenses';
+    case 'household': return 'Household';
+    case 'healthcare': return 'Healthcare';
+    case 'travel': return 'Travel';
+    case 'hobbies': return 'Hobbies';
+    case 'personal': return 'Personal';
+    default: return category.charAt(0).toUpperCase() + category.slice(1);
   }
 };
 
-// map categories to their data
+// Map categories to their data
 const categoryDataMap = {
   'school-supplies': schoolSuppliesData,
   tuition: tuitionData,
@@ -216,7 +200,7 @@ const categoryDataMap = {
   household: householdData,
 };
 
-// define category-specific goals for "spend" and "save"
+// Define category-specific goals for "spend" and "save"
 const categoryGoals = {
   'school-supplies': { spend: 200, save: 300 },
   tuition: { spend: 1, save: 12000 },
@@ -231,18 +215,43 @@ const categoryGoals = {
   travel: { spend: 4000, save: 5000 },
   hobbies: { spend: 200, save: 300 },
   household: { spend: 1000, save: 1500 },
-  default: { spend: 600, save: 800 }, // fallback for no category selected
+  default: { spend: 600, save: 800 },
+};
+
+// Add getCategoryColor function from the first code
+const getCategoryColor = (category) => {
+  switch (category) {
+    case 'school-supplies':
+    case 'personal':
+      return '#b2dfdb';
+    case 'tuition':
+    case 'entertainment':
+      return '#f8bbd0';
+    case 'work':
+    case 'rent':
+    case 'mortgage':
+    case 'household':
+    case 'healthcare':
+      return '#c5cae9';
+    case 'groceries':
+    case 'family-expenses':
+      return '#ffccbc';
+    case 'travel':
+    case 'hobbies':
+      return '#dcedc8';
+    default:
+      return '#e0e0e0';
+  }
 };
 
 export default function Home() {
-  const [view, setView] = React.useState('spend'); 
-  const [category, setCategory] = React.useState(''); 
+  const [view, setView] = React.useState('spend');
+  const [category, setCategory] = React.useState('');
   const [categories, setCategories] = React.useState(defaultCategories);
   const [recentActivity] = React.useState(baseRecentActivity);
   const [userName, setUserName] = useState('');
-  const [chartDataState, setChartDataState] = React.useState(defaultChartData); 
+  const [chartDataState, setChartDataState] = React.useState(defaultChartData);
 
-  // load persona and name from localStorage
   useEffect(() => {
     const savedProfile = localStorage.getItem('profileData');
     if (savedProfile) {
@@ -262,7 +271,6 @@ export default function Home() {
   const handleCategoryChange = (event) => {
     const selectedCategory = event.target.value;
     setCategory(selectedCategory);
-    // update chart data based on category
     if (selectedCategory && categoryDataMap[selectedCategory]) {
       setChartDataState(categoryDataMap[selectedCategory]);
     } else {
@@ -270,7 +278,7 @@ export default function Home() {
     }
   };
 
-  // chart legend component
+  // Chart legend component
   const ChartKey = () => (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
@@ -288,17 +296,12 @@ export default function Home() {
     </Box>
   );
 
-  // determine the progress title based on whether a name is set
   const progressTitle = userName ? `${userName}'s Progress` : 'Your Progress';
-
-  // set goal line based on view and category
   const goalLineValue = category && categoryGoals[category]
     ? categoryGoals[category][view]
     : categoryGoals.default[view];
-
-  // dynamically set Y-axis domain based on chart data and goal
   const maxDataValue = Math.max(...chartDataState.map((data) => data.amount));
-  const yAxisMax = Math.max(maxDataValue * 1.2, goalLineValue * 1.2); 
+  const yAxisMax = Math.max(maxDataValue * 1.2, goalLineValue * 1.2);
 
   return (
     <Box sx={{ p: 2 }}>
@@ -309,13 +312,13 @@ export default function Home() {
         </Typography>
       </Box>
 
-      {/* Chart section */}
+      {/* Chart section (exactly as in the original second code) */}
       <Box sx={{ mb: 3 }}>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={chartDataState} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
             <XAxis dataKey="month" stroke="#000000" />
-            <YAxis stroke="#000000" domain={[0, yAxisMax]} /> 
+            <YAxis stroke="#000000" domain={[0, yAxisMax]} />
             <Tooltip />
             <ReferenceLine y={goalLineValue} label={{ position: 'left', fill: '#ff0000' }} stroke="#ff0000" strokeDasharray="3 3" />
             <Line type="monotone" dataKey="amount" stroke="#000000" strokeWidth={2} dot={{ r: 5 }} activeDot={{ r: 8 }} />
@@ -379,70 +382,87 @@ export default function Home() {
         </FormControl>
       </Box>
 
-      {/* Recent activity */}
+      {/* Recent activity with unified card design */}
       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
         Your Recent Activity
       </Typography>
-      {recentActivity.map((activity, index) => (
-        <Card key={index} sx={{ mb: 2, bgcolor: '#e1bee7', borderRadius: '10px' }}>
-          <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box>
-              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                {activity.title}
-              </Typography>
-              {activity.description && (
-                <Typography variant="body2" color="textSecondary">
-                  {activity.description}
+      {recentActivity.map((activity, index) => {
+        const isSaving = activity.type === 'SAVINGS';
+        const amountValue = parseFloat(activity.amount.replace('$', ''));
+
+        return (
+          <Card
+            key={index}
+            sx={{
+              mb: 2,
+              bgcolor: isSaving ? '#e1bee7' : '#000000',
+              color: isSaving ? '#000000' : '#ffffff',
+              borderRadius: '10px',
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 'bold',
+                    wordBreak: 'break-word',
+                    maxWidth: '70%',
+                    color: isSaving ? '#000000' : '#ffffff',
+                  }}
+                >
+                  {activity.title.length > 30
+                    ? `${activity.title.substring(0, 30)}...`
+                    : activity.title}
                 </Typography>
-              )}
-              {activity.status && (
-                <Typography variant="body2" color="textSecondary">
-                  {activity.status} YOU'RE AT {activity.amount}
+              </Box>
+
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    flex: 1,
+                    pr: 2,
+                    wordBreak: 'break-word',
+                    whiteSpace: 'pre-wrap',
+                    color: isSaving ? '#000000' : '#ffffff',
+                  }}
+                >
+                  {activity.description || (activity.status ? `${activity.status} YOU'RE AT ${activity.amount}` : activity.type || '')}
                 </Typography>
-              )}
-              {activity.type && (
-                <Typography variant="body2" color="textSecondary">
-                  {activity.type}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 'bold',
+                    minWidth: '80px',
+                    textAlign: 'right',
+                    color: isSaving ? '#000000' : '#ffffff',
+                  }}
+                >
+                  ${amountValue.toFixed(2)}
                 </Typography>
-              )}
-              <Typography variant="body2" color="textSecondary">
-                DATE: {activity.date}
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: 'right' }}>
-              {activity.amount && (
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {activity.amount}
+              </Box>
+
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ color: isSaving ? '#000000' : '#ffffff' }}
+                >
+                  DATE: {activity.date}
                 </Typography>
-              )}
-              {activity.goal && (
-                <Typography variant="body2" color="textSecondary">
-                  GOAL: {activity.goal}
-                </Typography>
-              )}
-              <Chip
-                label={getCategoryDisplayName(activity.category)}
-                sx={{
-                  mt: 1,
-                  bgcolor:
-                    activity.category === 'school-supplies' || activity.category === 'personal'
-                      ? '#b2dfdb'
-                      : activity.category === 'tuition' || activity.category === 'entertainment'
-                      ? '#f8bbd0'
-                      : activity.category === 'work' || activity.category === 'rent' || activity.category === 'mortgage' || activity.category === 'household' || activity.category === 'healthcare'
-                      ? '#c5cae9'
-                      : activity.category === 'groceries' || activity.category === 'family-expenses'
-                      ? '#ffccbc'
-                      : activity.category === 'travel' || activity.category === 'hobbies'
-                      ? '#dcedc8'
-                      : '#e0e0e0',
-                  color: '#000000',
-                }}
-              />
-            </Box>
-          </CardContent>
-        </Card>
-      ))}
+                <Chip
+                  label={getCategoryDisplayName(activity.category)}
+                  size="small"
+                  sx={{
+                    bgcolor: getCategoryColor(activity.category),
+                    color: '#000000',
+                  }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+        );
+      })}
     </Box>
   );
 }

@@ -613,6 +613,10 @@ export default function Bills() {
                         setOpen(false);
                         setEditOpen(false);
                     }}
+                    sx={{
+                        backgroundColor: 'black',
+                        color: 'white',
+                      }}
                     >
                         {editOpen ? 'Save Changes' : 'Add'}
                     </Button>
