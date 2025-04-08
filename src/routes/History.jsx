@@ -427,7 +427,7 @@ export default function Categories() {
 
       {/* scrolling through the cards*/}
       <Box sx={{ 
-        maxHeight: 'calc(100vh - 550px)', 
+        maxHeight: '300px', 
         overflowY: 'auto', 
         mb: 2,
         mt: 2,
@@ -455,7 +455,7 @@ export default function Categories() {
             }}
           >
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 <Typography variant="h5" sx={{ 
                   fontWeight: 'bold',
                   wordBreak: 'break-word',
@@ -538,8 +538,8 @@ export default function Categories() {
         display: 'flex',
         justifyContent: 'center',
         gap: 2,
-        position: 'relative',
-        bottom: 20,
+        // position: 'relative',
+        // bottom: 20,
         padding: 2,
         zIndex: 10
       }}>
