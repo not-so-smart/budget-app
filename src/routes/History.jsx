@@ -409,7 +409,7 @@ export default function Categories() {
 
       {/* scrolling through the cards*/}
       <Box sx={{ 
-        maxHeight: 'calc(100vh - 450px)', 
+        maxHeight: 'calc(100vh - 550px)', 
         overflowY: 'auto', 
         mb: 2,
         mt: 2,
@@ -430,10 +430,10 @@ export default function Categories() {
           <Card 
             key={activity.id}
             sx={{ 
-              mb: 2, 
+              mb: 1.5, 
               bgcolor: activity.type === 'saving' ? '#e1bee7' : '#000000',
               color: activity.type === 'saving' ? '#000000' : '#ffffff',
-              borderRadius: '10px'
+              borderRadius: '8px'
             }}
           >
             <CardContent>
@@ -540,7 +540,7 @@ export default function Categories() {
           onClick={handleUndo}
           disabled={data.history.length === 0}
           sx={{
-            backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#424242',
+            backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#f44336',
             color: 'white',
             '&:hover': {
               backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#616161',
