@@ -52,9 +52,12 @@ export default function Profile() {
     const oldData = JSON.parse(localStorage.getItem('profileData') || '{}');
     const oldPersona = oldData.persona;
     localStorage.setItem('profileData', JSON.stringify(formData));
-    if (oldPersona && oldPersona !== formData.persona) {
+    const newPersona = formData.persona;
+    if (!oldPersona || oldPersona !== newPersona) {
       localStorage.setItem('personaChanged', 'true');
-      localStorage.setItem('lastPersona', oldPersona); // store what it was before
+      if (oldPersona) {
+        localStorage.setItem('lastPersona', oldPersona);
+      }
     } else {
       localStorage.setItem('personaChanged', 'false');
     }
