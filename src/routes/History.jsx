@@ -336,10 +336,10 @@ export default function Categories() {
             value="spent"
             sx={{
               flex: 1,
-              bgcolor: view?.includes('spent') ? '#ff4081' : '#f5f5f5',
-              color: view?.includes('spent') ? '#ffffff' : '#9e9e9e',
+              bgcolor: view?.includes('spent') ? '#000000' : '#ffffff',
+              color: view?.includes('spent') ? '#ffffff' : '#000000',
               '&:hover': {
-                bgcolor: view?.includes('spent') ? '#ff80ab' : '#eeeeee',
+                bgcolor: view?.includes('spent') ? '#333333' : '#f0f0f0',
               },
             }}
           >
@@ -349,10 +349,10 @@ export default function Categories() {
             value="saved"
             sx={{
               flex: 1,
-              bgcolor: view?.includes('saved') ? '#ff4081' : '#f5f5f5',
-              color: view?.includes('saved') ? '#ffffff' : '#9e9e9e',
+              bgcolor: view?.includes('saved') ? '#000000' : '#ffffff',
+              color: view?.includes('saved') ? '#ffffff' : '#000000',
               '&:hover': {
-                bgcolor: view?.includes('saved') ? '#ff80ab' : '#eeeeee',
+                bgcolor: view?.includes('saved') ? '#333333' : '#f0f0f0',
               },
             }}
           >
@@ -360,6 +360,8 @@ export default function Categories() {
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
+
+
 
       {/* sort by and categories */}
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -436,7 +438,7 @@ export default function Categories() {
           >
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ 
+                <Typography variant="h5" sx={{ 
                   fontWeight: 'bold',
                   wordBreak: 'break-word',
                   maxWidth: '70%',
