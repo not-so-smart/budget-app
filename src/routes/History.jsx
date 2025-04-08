@@ -38,13 +38,15 @@ const getCategoryDisplayName = (category) => {
 };
 
 function CircleDisplay({ value, label }) {
+  const isSaved = label === 'Saved';
+
   return (
     <Box sx={{
-      width: 100, 
-      height: 100, 
+      width: 100,
+      height: 100,
       borderRadius: '50%',
-      // '#cebef2'
-      bgcolor: label === 'Saved' ? '#3F5CEB' : '#e1bee7',
+      bgcolor: isSaved ? '#000000' : '#e1bee7',
+      color: isSaved ? '#ffffff' : 'inherit',  // Add this line
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -59,6 +61,7 @@ function CircleDisplay({ value, label }) {
     </Box>
   );
 }
+
 
 const getInitialData = () => {
   try {
@@ -422,68 +425,90 @@ export default function Categories() {
           </Typography>
         ) : (
           sortActivities().map((activity) => (
-            <Card 
-              key={activity.id}
-              sx={{ 
-                mb: 2, 
-                bgcolor: activity.type === 'saving' ? '#3F5CEB' : '#e1bee7',
-                borderRadius: '10px'
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="h6" sx={{ 
-                    fontWeight: 'bold',
-                    wordBreak: 'break-word',
-                    maxWidth: '70%'
-                  }}>
-                    {activity.title.length > 30 
-                      ? `${activity.title.substring(0, 30)}...` 
-                      : activity.title}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <IconButton onClick={() => handleEditOpen(activity.id)} size="small">
-                      <Edit fontSize="small"/>
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteBill(activity.id)} size="small">
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  </Box>
+          <Card 
+            key={activity.id}
+            sx={{ 
+              mb: 2, 
+              bgcolor: activity.type === 'saving' ? '#e1bee7' : '#000000',
+              color: activity.type === 'saving' ? '#000000' : '#ffffff',
+              borderRadius: '10px'
+            }}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 'bold',
+                  wordBreak: 'break-word',
+                  maxWidth: '70%',
+                  color: activity.type === 'saving' ? '#000000' : '#ffffff'
+                }}>
+                  {activity.title.length > 30 
+                    ? `${activity.title.substring(0, 30)}...` 
+                    : activity.title}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  <IconButton 
+                    onClick={() => handleEditOpen(activity.id)} 
+                    size="small"
+                    sx={{ color: activity.type === 'saving' ? '#000000' : '#e1bee7' }}
+                  >
+                    <Edit fontSize="small"/>
+                  </IconButton>
+                  <IconButton 
+                    onClick={() => handleDeleteBill(activity.id)} 
+                    size="small"
+                    sx={{ color: activity.type === 'saving' ? '#000000' : '#e1bee7' }}
+                  >
+                    <Delete fontSize="small" />
+                  </IconButton>
                 </Box>
+              </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
-                  <Typography variant="body1" color="textSecondary" sx={{ 
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
                     flex: 1,
                     pr: 2,
                     wordBreak: 'break-word',
-                    whiteSpace: 'pre-wrap'
-                  }}>
-                    {activity.description}
-                  </Typography>
-                  <Typography variant="h6" sx={{ 
+                    whiteSpace: 'pre-wrap',
+                    color: activity.type === 'saving' ? '#000000' : '#ffffff'
+                  }}
+                >
+                  {activity.description}
+                </Typography>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
                     fontWeight: 'bold',
                     minWidth: '80px',
-                    textAlign: 'right'
-                  }}>
-                    ${activity.amount.toFixed(2)}
-                  </Typography>
-                </Box>
+                    textAlign: 'right',
+                    color: activity.type === 'saving' ? '#000000' : '#ffffff'
+                  }}
+                >
+                  ${activity.amount.toFixed(2)}
+                </Typography>
+              </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
-                  <Typography variant="body1" color="textSecondary">
-                    DATE: {activity.date}
-                  </Typography>
-                  <Chip
-                    label={getCategoryDisplayName(activity.category)}
-                    size="small"
-                    sx={{ 
-                      bgcolor: getCategoryColor(activity.category),
-                      color: '#000000'
-                    }}
-                  />
-                </Box>
-              </CardContent>
-            </Card>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ color: activity.type === 'saving' ? '#000000' : '#ffffff' }}
+                >
+                  DATE: {activity.date}
+                </Typography>
+                <Chip
+                  label={getCategoryDisplayName(activity.category)}
+                  size="small"
+                  sx={{ 
+                    bgcolor: getCategoryColor(activity.category),
+                    color: '#000000'
+                  }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+
           ))
         )}
       </Box>
