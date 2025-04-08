@@ -37,14 +37,14 @@ const getCategoryDisplayName = (category) => {
   }
 };
 
-// circle display at top
 function CircleDisplay({ value, label }) {
   return (
     <Box sx={{
       width: 100, 
       height: 100, 
       borderRadius: '50%',
-      bgcolor: label === 'Saved' ? '#cebef2' : '#e1bee7',
+      // '#cebef2'
+      bgcolor: label === 'Saved' ? '#3F5CEB' : '#e1bee7',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
@@ -69,7 +69,7 @@ const getInitialData = () => {
         activities: parsed.activities || [],
         savedTotal: parsed.savedTotal || 0,
         spentTotal: parsed.spentTotal || 0,
-        history: [] // Don't load history from storage
+        history: []
       };
     }
   } catch (e) {
@@ -115,7 +115,7 @@ const getInitialData = () => {
 export default function Categories() {
   const [data, setData] = useState(getInitialData());
   const [open, setOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editingID, setEditingID] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [view, setView] = useState(null);
@@ -123,7 +123,6 @@ export default function Categories() {
   const [categories, setCategories] = useState(defaultCategories);
   const [activeButton, setActiveButton] = useState('recent');
 
-  // persona categories
   useEffect(() => {
     const savedProfile = localStorage.getItem('profileData');
     if (savedProfile) {
@@ -132,7 +131,6 @@ export default function Categories() {
     }
   }, []);
 
-  // calculate totals
   const calculateTotals = (activities) => {
     return activities.reduce((acc, activity) => {
       if (activity.type === 'saving') {
@@ -144,7 +142,6 @@ export default function Categories() {
     }, { spent: 0, saved: 0 });
   };
 
-  // form state
   const [newBill, setNewBill] = useState({
     title: '',
     description: '',
@@ -159,12 +156,10 @@ export default function Categories() {
     setNewBill(prev => ({ ...prev, [name]: value }));
   };
 
-  // dave to localStorage
   useEffect(() => {
     localStorage.setItem('spendingData', JSON.stringify(data));
   }, [data]);
 
-  // dialog handlers
   const handleOpen = () => {
     setNewBill({
       title: '',
@@ -174,47 +169,43 @@ export default function Categories() {
       category: 'personal',
       type: 'expense'
     });
-    setEditIndex(null);
+    setEditingID(null);
     setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
 
-  const handleEditOpen = (index) => {
-    const activity = data.activities[index];
-    setNewBill({
-      ...activity,
-      amount: activity.amount.toString()
-    });
-    setEditIndex(index);
-    setOpen(true);
+  const handleEditOpen = (id) => {
+    const activity = data.activities.find(a => a.id === id);
+    if (activity) {
+      setNewBill({
+        ...activity,
+        amount: activity.amount.toString()
+      });
+      setEditingID(id);  
+      setOpen(true);
+    }
   };
-
-  // sorting
   const sortOptions = [
     { id: 'recent', label: 'Recent' },
     { id: 'past', label: 'Past' },
     { id: 'low-high', label: '$ -> $$$' },
     { id: 'high-low', label: '$$$ -> $' },
   ];
+
   const sortActivities = () => {
     let sorted = [...data.activities];
-    
-    // Filter by view (spent/saved)
     if (view && view.length > 0) {
       sorted = sorted.filter(a => 
         (view.includes('spent') && a.type === 'expense') || 
         (view.includes('saved') && a.type === 'saving')
       );
     }
-    // When view is null or empty array, show all
     
-    // Filter by category if selected
     if (selectedCategory) {
       sorted = sorted.filter(a => a.category === selectedCategory);
     }
     
-    // Apply sorting
     switch (activeButton) {
       case 'recent': return sorted.sort((a, b) => b.timestamp - a.timestamp);
       case 'past': return sorted.sort((a, b) => a.timestamp - b.timestamp);
@@ -223,7 +214,7 @@ export default function Categories() {
       default: return sorted;
     }
   };
-  // add/edit transaction
+
   const handleAddBill = () => {
     if (newBill.title && newBill.amount) {
       const amount = parseFloat(newBill.amount);
@@ -231,14 +222,15 @@ export default function Categories() {
       
       const activity = {
         ...newBill,
+        id: editingID || Date.now().toString(),
         amount,
         date: new Date().toLocaleDateString(),
         timestamp: new Date().getTime()
       };
       
       setData(prev => {
-        const newActivities = editIndex !== null
-          ? prev.activities.map((a, i) => i === editIndex ? activity : a)
+        const newActivities = editingID
+          ? prev.activities.map(a => a.id === editingID ? activity : a)
           : [...prev.activities, activity];
         
         const { spent, saved } = calculateTotals(newActivities);
@@ -251,16 +243,15 @@ export default function Categories() {
         };
       });
       
-      setSnackbarMessage(editIndex !== null ? 'Transaction updated!' : 'Transaction added!');
+      setSnackbarMessage(editingID ? 'Transaction updated!' : 'Transaction added!');
       setSnackbarOpen(true);
       handleClose();
     }
   };
 
-  // delete transaction
-  const handleDeleteBill = (index) => {
+  const handleDeleteBill = (id) => {
     setData(prev => {
-      const newActivities = prev.activities.filter((_, i) => i !== index);
+      const newActivities = prev.activities.filter(a => a.id !== id);
       const { spent, saved } = calculateTotals(newActivities);
       
       return {
@@ -275,7 +266,6 @@ export default function Categories() {
     setSnackbarOpen(true);
   };
 
-  // undo
   const handleUndo = () => {
     if (data.history.length > 0) {
       setData(data.history[data.history.length - 1]);
@@ -284,17 +274,14 @@ export default function Categories() {
     }
   };
 
-  // view toggle (spend/receive)
   const handleViewChange = (event, newView) => {
     setView(newView);
   };
 
-  // category change
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
   };
 
-  // get card color based on category (matches home page)
   const getCategoryColor = (category) => {
     switch (category) {
       case 'school-supplies':
@@ -329,106 +316,194 @@ export default function Categories() {
         </Typography>
       </Box>
 
-      {/* circles*/}
+      {/* overview circles */}
       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mb: 3 }}>
         <CircleDisplay value={data.savedTotal} label="Saved" />
         <CircleDisplay value={data.spentTotal} label="Spent" />
       </Box>
 
-      {/* Toggle between spending and receiving*/}
+      {/* spent and saved toggle */}
       <Box sx={{ mb: 3 }}>
-        {/* Fixed Toggle Button Group */}
-        <Box sx={{ mb: 3 }}>
-          <ToggleButtonGroup
-            value={view || []}
-            onChange={(event, newViews) => setView(newViews)}
-            sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
+        <ToggleButtonGroup
+          value={view || []}
+          onChange={handleViewChange}
+          sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
+        >
+          <ToggleButton
+            value="spent"
+            sx={{
+              flex: 1,
+              bgcolor: view?.includes('spent') ? '#ff4081' : '#f5f5f5',
+              color: view?.includes('spent') ? '#ffffff' : '#9e9e9e',
+              '&:hover': {
+                bgcolor: view?.includes('spent') ? '#ff80ab' : '#eeeeee',
+              },
+            }}
           >
-            <ToggleButton
-              value="spent"
-              sx={{
-                flex: 1,
-                bgcolor: view?.includes('spent') ? '#ff4081' : '#f5f5f5',
-                color: view?.includes('spent') ? '#ffffff' : '#9e9e9e',
-                '&:hover': {
-                  bgcolor: view?.includes('spent') ? '#ff80ab' : '#eeeeee',
-                },
-              }}
-            >
-              SPENT
-            </ToggleButton>
-            <ToggleButton
-              value="saved"
-              sx={{
-                flex: 1,
-                bgcolor: view?.includes('saved') ? '#ff4081' : '#f5f5f5',
-                color: view?.includes('saved') ? '#ffffff' : '#9e9e9e',
-                '&:hover': {
-                  bgcolor: view?.includes('saved') ? '#ff80ab' : '#eeeeee',
-                },
-              }}
-            >
-              SAVED
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-
-        {/* category dropdown */}
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Filter by category</InputLabel>
-          <Select
-            value={selectedCategory}
-            label="Filter by category"
-            onChange={handleCategoryChange}
+            SPENT
+          </ToggleButton>
+          <ToggleButton
+            value="saved"
+            sx={{
+              flex: 1,
+              bgcolor: view?.includes('saved') ? '#ff4081' : '#f5f5f5',
+              color: view?.includes('saved') ? '#ffffff' : '#9e9e9e',
+              '&:hover': {
+                bgcolor: view?.includes('saved') ? '#ff80ab' : '#eeeeee',
+              },
+            }}
           >
-            <MenuItem value="">All Categories</MenuItem>
-            {categories.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {getCategoryDisplayName(cat)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* sort buttons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-            SORT:
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            {sortOptions.map((option) => (
-              <Button
-                key={option.id}
-                variant={activeButton === option.id ? 'contained' : 'outlined'}
-                onClick={() => setActiveButton(option.id)}
-                sx={{
-                  minWidth: '100px',
-                  color: activeButton === option.id ? 'white' : 'black',
-                  backgroundColor: activeButton === option.id ? 'black' : 'white',
-                  borderColor: 'black',
-                  '&:hover': {
-                    backgroundColor: activeButton === option.id ? '#333' : '#f5f5f5',
-                    borderColor: 'black'
-                  }
-                }}
-              >
-                {option.label}
-              </Button>
-            ))}
-          </Box>
-        </Box>
+            SAVED
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Box>
 
-      {/* action buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
+      {/* sort by and categories */}
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <FormControl sx={{ minWidth: 150 }} size="small">
+            <InputLabel>Sort By</InputLabel>
+            <Select
+              value={activeButton}
+              label="Sort By"
+              onChange={(e) => setActiveButton(e.target.value)}
+              sx={{
+                '& .MuiSelect-select': {
+                  py: 1.2,  
+                }
+              }}
+            >
+              {sortOptions.map((option) => (
+                <MenuItem key={option.id} value={option.id} sx={{ py: 1 }}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ minWidth: 150 }} size="small">
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={selectedCategory}
+              label="Category"  
+              onChange={handleCategoryChange}
+              sx={{
+                '& .MuiSelect-select': {
+                  py: 1.2,  
+                }
+              }}
+            >
+              <MenuItem value="" sx={{ py: 1 }}>All Categories</MenuItem>
+              {categories.map((cat) => (
+                <MenuItem key={cat} value={cat} sx={{ py: 1 }}>
+                  {getCategoryDisplayName(cat)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+      {/* scrolling through the cards*/}
+      <Box sx={{ 
+        maxHeight: 'calc(100vh - 450px)', 
+        overflowY: 'auto', 
+        mb: 2,
+        mt: 2,
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#888',
+          borderRadius: '3px',
+        }
+      }}>
+        {sortActivities().length === 0 ? (
+          <Typography sx={{ textAlign: 'center', p: 3, color: 'text.secondary' }}>
+            No transactions found for the selected filters
+          </Typography>
+        ) : (
+          sortActivities().map((activity) => (
+            <Card 
+              key={activity.id}
+              sx={{ 
+                mb: 2, 
+                bgcolor: activity.type === 'saving' ? '#3F5CEB' : '#e1bee7',
+                borderRadius: '10px'
+              }}
+            >
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="h6" sx={{ 
+                    fontWeight: 'bold',
+                    wordBreak: 'break-word',
+                    maxWidth: '70%'
+                  }}>
+                    {activity.title.length > 30 
+                      ? `${activity.title.substring(0, 30)}...` 
+                      : activity.title}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <IconButton onClick={() => handleEditOpen(activity.id)} size="small">
+                      <Edit fontSize="small"/>
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteBill(activity.id)} size="small">
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                  <Typography variant="body1" color="textSecondary" sx={{ 
+                    flex: 1,
+                    pr: 2,
+                    wordBreak: 'break-word',
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    {activity.description}
+                  </Typography>
+                  <Typography variant="h6" sx={{ 
+                    fontWeight: 'bold',
+                    minWidth: '80px',
+                    textAlign: 'right'
+                  }}>
+                    ${activity.amount.toFixed(2)}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                  <Typography variant="body1" color="textSecondary">
+                    DATE: {activity.date}
+                  </Typography>
+                  <Chip
+                    label={getCategoryDisplayName(activity.category)}
+                    size="small"
+                    sx={{ 
+                      bgcolor: getCategoryColor(activity.category),
+                      color: '#000000'
+                    }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </Box>
+
+      {/* undo and add at bottom of scroll*/}
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 2,
+        position: 'sticky',
+        bottom: 20,
+        padding: 2
+      }}>
         <Fab
           color="primary"
           onClick={handleOpen}
           sx={{
             backgroundColor: 'black',
             color: 'white',
-            '&:hover': { backgroundColor: '#333', transform: 'scale(1.1)' },
-            transition: 'all 0.2s ease'
+            '&:hover': { backgroundColor: '#333' }
           }}
         >
           <Add />
@@ -442,98 +517,17 @@ export default function Categories() {
             color: 'white',
             '&:hover': {
               backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#616161',
-              transform: 'scale(1.1)'
-            },
-            transition: 'all 0.2s ease'
+            }
           }}
         >
           <Undo />
         </Fab>
       </Box>
 
-      {/* activity list */}
-      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-        Your Activity
-      </Typography>
-      
-      {sortActivities().length === 0 ? (
-        <Typography sx={{ textAlign: 'center', p: 3, color: 'text.secondary' }}>
-          No transactions found for the selected filters
-        </Typography>
-      ) : (
-        sortActivities().map((activity, index) => (
-          <Card 
-            key={index} 
-            sx={{ 
-              mb: 2, 
-              bgcolor: activity.type === 'saving' ? '#cebef2' : '#e1bee7',
-              borderRadius: '10px'
-            }}
-          >
-            <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {activity.title}
-                </Typography>
-                {activity.description && (
-                  <Typography variant="body2" color="textSecondary">
-                    {activity.description}
-                  </Typography>
-                )}
-                <Typography variant="body2" color="textSecondary">
-                  DATE: {activity.date}
-                </Typography>
-              </Box>
-              <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  ${activity.amount.toFixed(2)}
-                </Typography>
-                <Chip
-                  label={getCategoryDisplayName(activity.category)}
-                  sx={{ 
-                    mt: 1, 
-                    bgcolor: getCategoryColor(activity.category),
-                    color: '#000000'
-                  }}
-                />
-                <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                  <IconButton
-                    onClick={() => handleEditOpen(
-                      data.activities.findIndex(a => a.timestamp === activity.timestamp)
-                    )}
-                    size="small"
-                    sx={{
-                      color: 'primary.main',
-                      backgroundColor: 'rgba(255,255,255,0.7)',
-                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
-                    }}
-                  >
-                    <Edit fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDeleteBill(
-                      data.activities.findIndex(a => a.timestamp === activity.timestamp)
-                    )}
-                    size="small"
-                    sx={{
-                      color: 'error.main',
-                      backgroundColor: 'rgba(255,255,255,0.7)',
-                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
-                    }}
-                  >
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        ))
-      )}
-
-      {/* add/edit dialog */}
+      {/* add and edit a bill*/}
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>
-          {editIndex !== null ? 'Edit Transaction' : 'Add New Transaction'}
+          {editingID !== null ? 'Edit Transaction' : 'Add New Transaction'}
           <IconButton
             aria-label="close"
             onClick={handleClose}
@@ -571,6 +565,12 @@ export default function Categories() {
               onChange={handleInputChange}
               fullWidth
               required
+              error={newBill.title.length > 25}
+              helperText={
+                newBill.title.length > 25 
+                  ? 'Title must be 25 characters or fewer' 
+                  : `${newBill.title.length}/25`
+              }
             />
             
             <TextField
@@ -581,6 +581,12 @@ export default function Categories() {
               fullWidth
               multiline
               rows={3}
+              error={newBill.description.length > 80}
+              helperText={
+                newBill.description.length > 80 
+                  ? 'Description must be 80 characters or fewer' 
+                  : `${newBill.description.length}/80`
+              }
             />
             
             <Box sx={{ display: 'flex', gap: 2 }}>
@@ -618,7 +624,12 @@ export default function Categories() {
           <Button 
             variant="contained" 
             onClick={handleAddBill}
-            disabled={!newBill.title || !newBill.amount}
+            disabled={
+              !newBill.title || 
+              !newBill.amount || 
+              newBill.title.length > 25 || 
+              newBill.description.length > 80
+            }
             startIcon={<Add />}
             sx={{ 
               backgroundColor: 'black', 
@@ -626,7 +637,7 @@ export default function Categories() {
               '&:hover': { backgroundColor: '#333' } 
             }}
           >
-            {editIndex !== null ? 'Update' : 'Add'} Transaction
+            {editingID !== null ? 'Update' : 'Add'} Transaction
           </Button>
         </DialogActions>
       </Dialog>
