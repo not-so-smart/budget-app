@@ -167,8 +167,8 @@ export default function Goals() {
                             sx={{
                                 color: savingsGoals.reduce((sum, goal) => sum + goal.value, 0) >=
                                     savingsGoals.reduce((sum, goal) => sum + goal.target, 0)
-                                    ? '#18b87b' // Green if current savings >= target
-                                    : '#b81818', // Red otherwise
+                                    ? '#bfe4bf' // Green if current savings >= target
+                                    : '#ffb7b7', // Red otherwise
                             }}
                         >
                             ${savingsGoals.reduce((sum, goal) => sum + goal.value, 0)}
