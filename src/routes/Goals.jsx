@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Fab from '@mui/material/Fab';
@@ -13,20 +13,26 @@ import Snackbar from '@mui/material/Snackbar';
 
 export default function Goals() {
     // State for savings goals
-    const [savingsGoals, setSavingsGoals] = useState([
         { id: 1, name: 'Essentials', value: 50, target: 250 },
         { id: 2, name: 'Personal', value: 30, target: 100 },
         { id: 3, name: 'Work', value: 70, target: 200 },
         { id: 4, name: 'Other', value: 20, target: 50 },
-    ]);
+    const [savingsGoals, setSavingsGoals] = useState(() => {
+        const savedSavings = localStorage.getItem('savingsGoals');
+        return savedSavings ? JSON.parse(savedSavings) : [
+        ];
+    });
 
     // State for spending goals
-    const [spendingGoals, setSpendingGoals] = useState([
         { id: 1, name: 'Entertainment', value: 50, target: 250 },
         { id: 2, name: 'Personal', value: 30, target: 100 },
         { id: 3, name: 'Work', value: 70, target: 200 },
         { id: 4, name: 'Childcare', value: 20, target: 50 },
-    ]);
+    const [spendingGoals, setSpendingGoals] = useState(() => {
+        const savedSpending = localStorage.getItem('spendingGoals');
+        return savedSpending ? JSON.parse(savedSpending) : [
+        ];
+    });
 
     // State for dialog and new goal
     const [open, setOpen] = useState(false);
@@ -34,6 +40,16 @@ export default function Goals() {
     const [newGoal, setNewGoal] = useState({ name: '', value: 0, target: 0 });
     const [isSavings, setIsSavings] = useState(true); // Track whether editing savings or spending
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+    // Save savingsGoals to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('savingsGoals', JSON.stringify(savingsGoals));
+    }, [savingsGoals]);
+
+    // Save spendingGoals to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('spendingGoals', JSON.stringify(spendingGoals));
+    }, [spendingGoals]);
 
     // Open dialog for adding or editing
     const handleOpen = (goal = null, isSavingsGoal = true) => {
@@ -136,7 +152,7 @@ export default function Goals() {
                         sx={{
                             height: '150px',
                             width: '100%',
-                            backgroundColor: '#bfe4bf',
+                            backgroundColor: 'black',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
@@ -162,12 +178,12 @@ export default function Goals() {
                             sx={{
                                 width: '80%',
                                 height: '4px',
-                                backgroundColor: '#000',
+                                backgroundColor: '#fbfbfb',
                                 borderRadius: '2.5px',
                             }}
                         />
                         {/* Target Savings */}
-                        <Typography variant="h3" sx={{ color: '#000' }}>
+                        <Typography variant="h3" sx={{ color: '#fbfbfb' }}>
                             ${savingsGoals.reduce((sum, goal) => sum + goal.target, 0)}
                         </Typography>
                     </Box>
@@ -261,7 +277,7 @@ export default function Goals() {
                         sx={{
                             height: '150px',
                             width: '100%',
-                            backgroundColor: '#ffb7b7',
+                            backgroundColor: '#e1bee7',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
