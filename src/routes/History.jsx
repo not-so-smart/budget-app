@@ -82,6 +82,7 @@ const getInitialData = () => {
   return {
     activities: [
       {
+        id: 1,
         title: 'AMC Movie Ticket',
         description: 'Received From Anna for Spiderman',
         amount: 17.80,
@@ -91,6 +92,7 @@ const getInitialData = () => {
         timestamp: new Date('2025-10-27').getTime()
       },
       {
+        id: 2,
         title: 'Coach Handbag',
         description: 'Nolita 19 in Signature Canvas',
         amount: 119.00,
@@ -100,6 +102,7 @@ const getInitialData = () => {
         timestamp: new Date('2025-10-27').getTime()
       },
       {
+        id: 3,
         title: 'Paycheck Deposit',
         description: 'Monthly salary',
         amount: 2500.00,
