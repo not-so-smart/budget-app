@@ -55,13 +55,12 @@ function CircleDisplay({ value, label }) {
       <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
         ${value.toFixed(2)}
       </Typography>
-      <Typography variant="body2">
+      {/* <Typography variant="body2">
         {label}
-      </Typography>
+      </Typography> */}
     </Box>
   );
 }
-
 
 const getInitialData = () => {
   try {
@@ -78,7 +77,7 @@ const getInitialData = () => {
   } catch (e) {
     console.error("Failed to load saved data", e);
   }
-  
+
   return {
     activities: [
       {
@@ -185,7 +184,7 @@ export default function Categories() {
         ...activity,
         amount: activity.amount.toString()
       });
-      setEditingID(id);  
+      setEditingID(id);
       setOpen(true);
     }
   };
@@ -199,16 +198,16 @@ export default function Categories() {
   const sortActivities = () => {
     let sorted = [...data.activities];
     if (view && view.length > 0) {
-      sorted = sorted.filter(a => 
-        (view.includes('spent') && a.type === 'expense') || 
+      sorted = sorted.filter(a =>
+        (view.includes('spent') && a.type === 'expense') ||
         (view.includes('saved') && a.type === 'saving')
       );
     }
-    
+
     if (selectedCategory) {
       sorted = sorted.filter(a => a.category === selectedCategory);
     }
-    
+
     switch (activeButton) {
       case 'recent': return sorted.sort((a, b) => b.timestamp - a.timestamp);
       case 'past': return sorted.sort((a, b) => a.timestamp - b.timestamp);
@@ -222,7 +221,7 @@ export default function Categories() {
     if (newBill.title && newBill.amount) {
       const amount = parseFloat(newBill.amount);
       if (isNaN(amount)) return;
-      
+
       const activity = {
         ...newBill,
         id: editingID || Date.now().toString(),
@@ -230,14 +229,14 @@ export default function Categories() {
         date: new Date().toLocaleDateString(),
         timestamp: new Date().getTime()
       };
-      
+
       setData(prev => {
         const newActivities = editingID
           ? prev.activities.map(a => a.id === editingID ? activity : a)
           : [...prev.activities, activity];
-        
+
         const { spent, saved } = calculateTotals(newActivities);
-        
+
         return {
           activities: newActivities,
           savedTotal: saved,
@@ -245,7 +244,7 @@ export default function Categories() {
           history: [...prev.history, JSON.parse(JSON.stringify(prev))]
         };
       });
-      
+
       setSnackbarMessage(editingID ? 'Transaction updated!' : 'Transaction added!');
       setSnackbarOpen(true);
       handleClose();
@@ -256,7 +255,7 @@ export default function Categories() {
     setData(prev => {
       const newActivities = prev.activities.filter(a => a.id !== id);
       const { spent, saved } = calculateTotals(newActivities);
-      
+
       return {
         activities: newActivities,
         spentTotal: spent,
@@ -264,7 +263,7 @@ export default function Categories() {
         history: [...prev.history, JSON.parse(JSON.stringify(prev))]
       };
     });
-    
+
     setSnackbarMessage('Transaction deleted!');
     setSnackbarOpen(true);
   };
@@ -320,22 +319,37 @@ export default function Categories() {
       </Box>
 
       {/* overview circles */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mb: 3 }}>
-        <CircleDisplay value={data.savedTotal} label="Saved" />
-        <CircleDisplay value={data.spentTotal} label="Spent" />
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 6, mb: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <CircleDisplay value={data.savedTotal} label="Saved" />
+          <Typography variant="subtitle1" sx={{ mt: 1 }}>Saved</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <CircleDisplay value={data.spentTotal} label="Spent" />
+          <Typography variant="subtitle1" sx={{ mt: 1 }}>Spent</Typography>
+        </Box>
       </Box>
+
 
       {/* spent and saved toggle */}
       <Box sx={{ mb: 3 }}>
         <ToggleButtonGroup
           value={view || []}
           onChange={handleViewChange}
-          sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
+          sx={{
+            mb: 2,
+            width: '100%',
+            border: '2px solid #000',
+            borderRadius: '8px',
+            overflow: 'hidden',
+          }}
         >
           <ToggleButton
             value="spent"
             sx={{
               flex: 1,
+              borderRight: '2px solid #000', // inner divider, always visible
+              borderRadius: 0,
               bgcolor: view?.includes('spent') ? '#000000' : '#ffffff',
               color: view?.includes('spent') ? '#ffffff' : '#000000',
               '&:hover': {
@@ -345,10 +359,12 @@ export default function Categories() {
           >
             SPENT
           </ToggleButton>
+
           <ToggleButton
             value="saved"
             sx={{
               flex: 1,
+              borderRadius: 0,
               bgcolor: view?.includes('saved') ? '#000000' : '#ffffff',
               color: view?.includes('saved') ? '#ffffff' : '#000000',
               '&:hover': {
@@ -362,55 +378,54 @@ export default function Categories() {
       </Box>
 
 
-
       {/* sort by and categories */}
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <FormControl sx={{ minWidth: 150 }} size="small">
-            <InputLabel>Sort By</InputLabel>
-            <Select
-              value={activeButton}
-              label="Sort By"
-              onChange={(e) => setActiveButton(e.target.value)}
-              sx={{
-                '& .MuiSelect-select': {
-                  py: 1.2,  
-                }
-              }}
-            >
-              {sortOptions.map((option) => (
-                <MenuItem key={option.id} value={option.id} sx={{ py: 1 }}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <FormControl sx={{ minWidth: 150 }} size="small">
+          <InputLabel>Sort By</InputLabel>
+          <Select
+            value={activeButton}
+            label="Sort By"
+            onChange={(e) => setActiveButton(e.target.value)}
+            sx={{
+              '& .MuiSelect-select': {
+                py: 1.2,
+              }
+            }}
+          >
+            {sortOptions.map((option) => (
+              <MenuItem key={option.id} value={option.id} sx={{ py: 1 }}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-          <FormControl sx={{ minWidth: 150 }} size="small">
-            <InputLabel>Category</InputLabel>
-            <Select
-              value={selectedCategory}
-              label="Category"  
-              onChange={handleCategoryChange}
-              sx={{
-                '& .MuiSelect-select': {
-                  py: 1.2,  
-                }
-              }}
-            >
-              <MenuItem value="" sx={{ py: 1 }}>All Categories</MenuItem>
-              {categories.map((cat) => (
-                <MenuItem key={cat} value={cat} sx={{ py: 1 }}>
-                  {getCategoryDisplayName(cat)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+        <FormControl sx={{ minWidth: 150 }} size="small">
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={selectedCategory}
+            label="Category"
+            onChange={handleCategoryChange}
+            sx={{
+              '& .MuiSelect-select': {
+                py: 1.2,
+              }
+            }}
+          >
+            <MenuItem value="" sx={{ py: 1 }}>All Categories</MenuItem>
+            {categories.map((cat) => (
+              <MenuItem key={cat} value={cat} sx={{ py: 1 }}>
+                {getCategoryDisplayName(cat)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
       {/* scrolling through the cards*/}
-      <Box sx={{ 
-        maxHeight: 'calc(100vh - 450px)', 
-        overflowY: 'auto', 
+      <Box sx={{
+        maxHeight: 'calc(100vh - 450px)',
+        overflowY: 'auto',
         mb: 2,
         mt: 2,
         '&::-webkit-scrollbar': {
@@ -427,89 +442,89 @@ export default function Categories() {
           </Typography>
         ) : (
           sortActivities().map((activity) => (
-          <Card 
-            key={activity.id}
-            sx={{ 
-              mb: 2, 
-              bgcolor: activity.type === 'saving' ? '#e1bee7' : '#000000',
-              color: activity.type === 'saving' ? '#000000' : '#ffffff',
-              borderRadius: '10px'
-            }}
-          >
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h5" sx={{ 
-                  fontWeight: 'bold',
-                  wordBreak: 'break-word',
-                  maxWidth: '70%',
-                  color: activity.type === 'saving' ? '#000000' : '#ffffff'
-                }}>
-                  {activity.title.length > 30 
-                    ? `${activity.title.substring(0, 30)}...` 
-                    : activity.title}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 0.5 }}>
-                  <IconButton 
-                    onClick={() => handleEditOpen(activity.id)} 
-                    size="small"
-                    sx={{ color: activity.type === 'saving' ? '#000000' : '#e1bee7' }}
-                  >
-                    <Edit fontSize="small"/>
-                  </IconButton>
-                  <IconButton 
-                    onClick={() => handleDeleteBill(activity.id)} 
-                    size="small"
-                    sx={{ color: activity.type === 'saving' ? '#000000' : '#e1bee7' }}
-                  >
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
-                <Typography 
-                  variant="body1" 
-                  sx={{ 
-                    flex: 1,
-                    pr: 2,
-                    wordBreak: 'break-word',
-                    whiteSpace: 'pre-wrap',
-                    color: activity.type === 'saving' ? '#000000' : '#ffffff'
-                  }}
-                >
-                  {activity.description}
-                </Typography>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
+            <Card
+              key={activity.id}
+              sx={{
+                mb: 2,
+                bgcolor: activity.type === 'saving' ? '#e1bee7' : '#000000',
+                color: activity.type === 'saving' ? '#000000' : '#ffffff',
+                borderRadius: '10px'
+              }}
+            >
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="h6" sx={{
                     fontWeight: 'bold',
-                    minWidth: '80px',
-                    textAlign: 'right',
+                    wordBreak: 'break-word',
+                    maxWidth: '70%',
                     color: activity.type === 'saving' ? '#000000' : '#ffffff'
-                  }}
-                >
-                  ${activity.amount.toFixed(2)}
-                </Typography>
-              </Box>
+                  }}>
+                    {activity.title.length > 30
+                      ? `${activity.title.substring(0, 30)}...`
+                      : activity.title}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <IconButton
+                      onClick={() => handleEditOpen(activity.id)}
+                      size="small"
+                      sx={{ color: activity.type === 'saving' ? '#000000' : '#e1bee7' }}
+                    >
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDeleteBill(activity.id)}
+                      size="small"
+                      sx={{ color: activity.type === 'saving' ? '#000000' : '#e1bee7' }}
+                    >
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
 
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
-                <Typography 
-                  variant="body1" 
-                  sx={{ color: activity.type === 'saving' ? '#000000' : '#ffffff' }}
-                >
-                  DATE: {activity.date}
-                </Typography>
-                <Chip
-                  label={getCategoryDisplayName(activity.category)}
-                  size="small"
-                  sx={{ 
-                    bgcolor: getCategoryColor(activity.category),
-                    color: '#000000'
-                  }}
-                />
-              </Box>
-            </CardContent>
-          </Card>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      flex: 1,
+                      pr: 2,
+                      wordBreak: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      color: activity.type === 'saving' ? '#000000' : '#ffffff'
+                    }}
+                  >
+                    {activity.description}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 'bold',
+                      minWidth: '80px',
+                      textAlign: 'right',
+                      color: activity.type === 'saving' ? '#000000' : '#ffffff'
+                    }}
+                  >
+                    ${activity.amount.toFixed(2)}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ color: activity.type === 'saving' ? '#000000' : '#ffffff' }}
+                  >
+                    DATE: {activity.date}
+                  </Typography>
+                  <Chip
+                    label={getCategoryDisplayName(activity.category)}
+                    size="small"
+                    sx={{
+                      bgcolor: getCategoryColor(activity.category),
+                      color: '#000000'
+                    }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
 
           ))
         )}
@@ -519,37 +534,69 @@ export default function Categories() {
       <Box sx={{
         display: 'flex',
         justifyContent: 'center',
-        gap: 2,
-        position: 'sticky',
+        gap: 4,
+        position: 'relative',
         bottom: 20,
-        padding: 2
+        padding: 2,
+        zIndex: 10
       }}>
-        <Fab
-          color="primary"
-          onClick={handleOpen}
-          sx={{
-            backgroundColor: 'black',
-            color: 'white',
-            '&:hover': { backgroundColor: '#333' }
-          }}
-        >
-          <Add />
-        </Fab>
-        <Fab
-          color="secondary"
-          onClick={handleUndo}
-          disabled={data.history.length === 0}
-          sx={{
-            backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#424242',
-            color: 'white',
-            '&:hover': {
-              backgroundColor: data.history.length === 0 ? '#e0e0e0' : '#616161',
-            }
-          }}
-        >
-          <Undo />
-        </Fab>
+        {/* Add Button */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Fab
+            color="primary"
+            onClick={handleOpen}
+            sx={{
+              backgroundColor: 'black',
+              borderRadius: '50%',
+              width: 60,
+              height: 60,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              boxShadow: 3,
+              '&:hover': {
+                backgroundColor: '#333',
+              },
+              mb: 1,
+            }}
+          >
+            <Add sx={{ fontSize: 24 }} />
+          </Fab>
+          <Typography variant="subtitle1" sx={{ color: 'black', fontWeight: 500 }}>
+            Add a Bill
+          </Typography>
+        </Box>
+
+        {/* Undo Button */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Fab
+            onClick={handleUndo}
+            sx={{
+              width: 60,
+              height: 60,
+              backgroundColor: '#e0e0e0',
+              color: 'white',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              boxShadow: 3,
+              '&:hover': {
+                backgroundColor: '#f44336',
+              },
+              '&:active': {
+                backgroundColor: '#f44336',
+              },
+              mb: 1,
+            }}
+          >
+            <Undo sx={{ fontSize: 22 }} />
+          </Fab>
+          <Typography variant="subtitle1" sx={{ color: 'black', fontWeight: 500 }}>
+            Undo Delete
+          </Typography>
+        </Box>
       </Box>
+
 
       {/* add and edit a bill*/}
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -568,7 +615,7 @@ export default function Categories() {
             <Close />
           </IconButton>
         </DialogTitle>
-        
+
         <DialogContent dividers>
           <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
             <FormControl fullWidth>
@@ -584,7 +631,7 @@ export default function Categories() {
                 <MenuItem value="saving">Saving</MenuItem>
               </Select>
             </FormControl>
-            
+
             <TextField
               label="Title"
               name="title"
@@ -594,12 +641,12 @@ export default function Categories() {
               required
               error={newBill.title.length > 25}
               helperText={
-                newBill.title.length > 25 
-                  ? 'Title must be 25 characters or fewer' 
+                newBill.title.length > 25
+                  ? 'Title must be 25 characters or fewer'
                   : `${newBill.title.length}/25`
               }
             />
-            
+
             <TextField
               label="Description"
               name="description"
@@ -610,12 +657,12 @@ export default function Categories() {
               rows={3}
               error={newBill.description.length > 80}
               helperText={
-                newBill.description.length > 80 
-                  ? 'Description must be 80 characters or fewer' 
+                newBill.description.length > 80
+                  ? 'Description must be 80 characters or fewer'
                   : `${newBill.description.length}/80`
               }
             />
-            
+
             <Box sx={{ display: 'flex', gap: 2 }}>
               <TextField
                 label="Amount"
@@ -626,7 +673,7 @@ export default function Categories() {
                 required
                 type="number"
               />
-              
+
               <FormControl fullWidth>
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -645,23 +692,23 @@ export default function Categories() {
             </Box>
           </Box>
         </DialogContent>
-        
+
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleAddBill}
             disabled={
-              !newBill.title || 
-              !newBill.amount || 
-              newBill.title.length > 25 || 
+              !newBill.title ||
+              !newBill.amount ||
+              newBill.title.length > 25 ||
               newBill.description.length > 80
             }
             startIcon={<Add />}
-            sx={{ 
-              backgroundColor: 'black', 
-              color: 'white', 
-              '&:hover': { backgroundColor: '#333' } 
+            sx={{
+              backgroundColor: 'black',
+              color: 'white',
+              '&:hover': { backgroundColor: '#333' }
             }}
           >
             {editingID !== null ? 'Update' : 'Add'} Transaction
