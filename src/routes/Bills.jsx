@@ -39,45 +39,52 @@ export default function Bills() {
     // useParams hook in case we need to implement deep linking in the future
     const { id } = useParams();
     const defaultBillsForPersona = {
+        none: [
+            {id: 1, name: 'Groceries', amount: 100, category: 'Personal', dueDate: '2025-08-01'},
+            {id: 2, name: 'Bowling', amount: 50, category: 'Entertainment', dueDate: '2025-07-01'},
+            {id: 3, name: 'Tuition Fees', amount: 5000, category: 'Work', dueDate: '2025-06-01'},
+        ],
         student: [
-          { id: 1, name: 'Tuition Fees', amount: 5000, category: 'Education', dueDate: '2025-08-01' },
-          { id: 2, name: 'Textbooks', amount: 300, category: 'Education', dueDate: '2025-08-10' },
-          { id: 3, name: 'Living Expenses', amount: 800, category: 'Living', dueDate: '2025-04-05' },
-          { id: 4, name: 'Student Loan Payment', amount: 200, category: 'Loans', dueDate: '2025-05-15' },
+          { id: 1, name: 'Tuition Fees', amount: 5000, category: 'Tuition', dueDate: '2025-08-01' },
+          { id: 2, name: 'Textbooks', amount: 300, category: 'School Supplies', dueDate: '2025-08-10' },
+          { id: 3, name: 'Computer', amount: 800, category: 'Work', dueDate: '2025-04-05' },
+          { id: 4, name: 'Student Loan Payment', amount: 200, category: 'Personal', dueDate: '2025-05-15' },
+          { id: 5, name: 'Bowling', amount: 50, category: 'Entertainment', dueDate: '2025-05-20' },
         ],
         'single-working-adult': [
-          { id: 1, name: 'Rent', amount: 1200, category: 'Housing', dueDate: '2025-04-01' },
-          { id: 2, name: 'Groceries', amount: 250, category: 'Living', dueDate: '2025-04-03' },
+          { id: 1, name: 'Rent', amount: 1200, category: 'Rent', dueDate: '2025-04-01' },
+          { id: 2, name: 'Groceries', amount: 250, category: 'Groceries', dueDate: '2025-04-03' },
           { id: 3, name: 'Bar/Date Night', amount: 80, category: 'Entertainment', dueDate: '2025-04-07' },
-          { id: 4, name: 'Gym Membership', amount: 50, category: 'Fitness', dueDate: '2025-04-15' },
-          { id: 5, name: 'Eating Out', amount: 100, category: 'Entertainment', dueDate: '2025-04-12' },
+          { id: 4, name: 'Gym Membership', amount: 50, category: 'Personal', dueDate: '2025-04-15' },
+          { id: 5, name: 'Computer', amount: 2000, category: 'Work', dueDate: '2025-04-12' },
         ],
         'married-working-adult': [
-          { id: 1, name: 'Rent/Mortgage', amount: 1500, category: 'Housing', dueDate: '2025-04-01' },
-          { id: 2, name: 'Utilities', amount: 300, category: 'Utilities', dueDate: '2025-04-05' },
-          { id: 3, name: 'Internet Bill', amount: 80, category: 'Utilities', dueDate: '2025-04-10' },
-          { id: 4, name: 'Honeymoon Fund', amount: 500, category: 'Leisure', dueDate: '2025-05-01' },
-          { id: 5, name: 'Health Insurance', amount: 200, category: 'Insurance', dueDate: '2025-04-07' },
+          { id: 1, name: 'Rent/Mortgage', amount: 1500, category: 'Mortgage', dueDate: '2025-04-01' },
+          { id: 2, name: 'Clothes', amount: 300, category: 'Personal', dueDate: '2025-04-05' },
+          { id: 3, name: 'Internet Bill', amount: 80, category: 'Work', dueDate: '2025-04-10' },
+          { id: 4, name: 'Honeymoon Fund', amount: 500, category: 'Family Expenses', dueDate: '2025-05-01' },
+          { id: 5, name: 'Bowling', amount: 100, category: 'Entertainment', dueDate: '2025-04-07' },
         ],
         'married-stay-at-home-adult': [
-          { id: 1, name: 'Groceries', amount: 300, category: 'Living', dueDate: '2025-04-03' },
-          { id: 2, name: 'Utilities', amount: 100, category: 'Utilities', dueDate: '2025-04-05' },
-          { id: 3, name: 'Home Maintenance', amount: 150, category: 'Home', dueDate: '2025-04-10' },
-          { id: 4, name: 'Childcare', amount: 400, category: 'Family', dueDate: '2025-04-01' },
-          { id: 5, name: 'Insurance', amount: 150, category: 'Insurance', dueDate: '2025-04-07' },
+          { id: 1, name: 'Groceries', amount: 300, category: 'Groceries', dueDate: '2025-04-03' },
+          { id: 2, name: 'Utilities', amount: 100, category: 'Household', dueDate: '2025-04-05' },
+          { id: 3, name: 'Internet Bill', amount: 150, category: 'Work', dueDate: '2025-04-10' },
+          { id: 4, name: 'Childcare', amount: 400, category: 'Family Expenses', dueDate: '2025-04-01' },
+          { id: 5, name: 'Clothes', amount: 150, category: 'Personal', dueDate: '2025-04-07' },
+          { id: 6, name: 'Bar/Date Night', amount: 150, category: 'Entertainment', dueDate: '2025-05-07' },
         ],
         retired: [
-          { id: 1, name: 'Hospital Bills', amount: 200, category: 'Health', dueDate: '2025-04-01' },
-          { id: 2, name: 'Medicine Costs', amount: 100, category: 'Health', dueDate: '2025-04-05' },
-          { id: 3, name: 'Pension Fund', amount: 1200, category: 'Retirement', dueDate: '2025-04-10' },
-          { id: 4, name: 'Utility Bills', amount: 150, category: 'Utilities', dueDate: '2025-04-15' },
-          { id: 5, name: 'Entertainment (Senior Discounts)', amount: 50, category: 'Leisure', dueDate: '2025-04-20' },
+          { id: 1, name: 'Hospital Bills', amount: 200, category: 'Healthcare', dueDate: '2025-04-01' },
+          { id: 2, name: 'Vacation', amount: 400, category: 'Travel', dueDate: '2025-04-05' },
+          { id: 3, name: 'Pension Fund', amount: 1200, category: 'Personal', dueDate: '2025-04-10' },
+          { id: 4, name: 'New CD\'s', amount: 150, category: 'Entertainment', dueDate: '2025-04-15' },
+          { id: 5, name: 'Entertainment (Senior Discounts)', amount: 50, category: 'Hobbies', dueDate: '2025-04-20' },
         ],
     };
     //this may need to be changed. i need to dynamically check when persona changes in the submit on profile page
     const [bills, setBills] = useState(() => {
         const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
-        const persona = profileData.persona || 'student';
+        const persona = profileData.persona || 'none';
       
         const personaChanged = localStorage.getItem('personaChanged') === 'true';
       
@@ -85,7 +92,7 @@ export default function Bills() {
       
         if (personaChanged) {
           console.log("persona changed")
-          const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['student'];
+          const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['none'];
           localStorage.setItem('billData', JSON.stringify(defaultBills));
           localStorage.setItem('lastPersona', persona); // update current as new "last"
           localStorage.setItem('personaChanged', 'false'); // reset flag
@@ -115,11 +122,21 @@ export default function Bills() {
     //     { id: 5, name: 'Gym Membership', amount: 40, category: 'Fitness', dueDate: '2025-04-03' },
     // ]));
     const [paidBills, setPaidBills] = useState(loadFromLocalStorage('paidBills', {}));
-    const [categoryColors, setCategoryColors] = useState(loadFromLocalStorage('categoryColors', {
-        Utilities: '#64b5f6',
-        Fitness: '#81c784',
-        Housing: '#f48fb1',
-    }));
+    const defaultCategoryColors = {
+        'Personal': '#b2dfdb',
+        'Work': '#c5cae9',
+        'Entertainment': '#f8bbd0',
+    };
+    
+    const [categoryColors, setCategoryColors] = useState(
+        loadFromLocalStorage('categoryColors', defaultCategoryColors)
+    );
+    
+    // const [categoryColors, setCategoryColors] = useState(loadFromLocalStorage('categoryColors', {
+    //     Personal: '#b2dfdb',
+    //     Work: '#c5cae9',
+    //     Entertainment: '#f8bbd0',
+    // }));
 
     const paidBillsCount = Object.values(paidBills).filter(Boolean).length;
     const unpaidBillsCount = bills.length - paidBillsCount;
@@ -178,10 +195,11 @@ export default function Bills() {
     };
     useEffect(() => {
         setCategoryColors(prevColors => {
-            const updatedColors = { ...prevColors };
+            const updatedColors = { ...defaultCategoryColors, ...prevColors };
             bills.forEach(bill => {
                 if (!updatedColors[bill.category]) {
-                    // Assign a random pastel color if the category is new
+                    console.log(bill.category)
+                    console.log("Available categoryColors keys:", Object.keys(categoryColors));
                     updatedColors[bill.category] = getRandomPastelColor();
                 }
             });
@@ -189,12 +207,15 @@ export default function Bills() {
         });
     }, [bills]);
     
+    
 
     const sortedBills = [...bills].sort((a, b) => {
         if (sortOption === 'category') {
             return a.category.localeCompare(b.category);
-        } else if (sortOption === 'dueDate') {
+        } else if (sortOption === 'past') {
             return new Date(b.dueDate) - new Date(a.dueDate);
+        } else if (sortOption === 'recent') {
+            return new Date(a.dueDate) - new Date(b.dueDate);       
         } else if (sortOption === 'paidStatus') {
             // Sorting by paid status (paid bills come first)
             const paidA = paidBills[a.id] ? 1 : 0;
@@ -243,18 +264,18 @@ export default function Bills() {
                             sx={{
                                 width: 80,
                                 height: 80,
-                                backgroundColor: '#4CAF50',
-                                border: '2px dashed #388E3C',
+                                backgroundColor: '#a9b1fc',
+                                border: '2px solid black',
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}
                         >
-                            <Typography variant="h5" color="white">
+                            <Typography variant="h5" color="black">
                                 {paidBillsCount}
                             </Typography>
                         </Avatar>
-                        <Typography variant='subtitle1' color='textSecondary'>
+                        <Typography variant='subtitle1' color='black'>
                             Paid
                         </Typography>
                     </Box>
@@ -266,18 +287,18 @@ export default function Bills() {
                             sx={{
                                 width: 80,
                                 height: 80,
-                                backgroundColor: '#F44336',
-                                border: '2px dashed #D32F2F',
+                                backgroundColor: '#e1bee7',
+                                border: '2px solid black',
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}
                         >
-                            <Typography variant="h5" color="white">
+                            <Typography variant="h5" color="black">
                                 {unpaidBillsCount}
                             </Typography>
                         </Avatar>
-                        <Typography variant="subtitle1" color="textSecondary">
+                        <Typography variant="subtitle1" color="black">
                             Unpaid
                         </Typography>
                     </Box>
@@ -293,7 +314,8 @@ export default function Bills() {
                         label="Sort By"
                     >
                         <MenuItem value="category">Category</MenuItem>
-                        <MenuItem value="dueDate">Due Date</MenuItem>
+                        <MenuItem value="recent">Past</MenuItem>
+                        <MenuItem value="past">Recent</MenuItem>
                         <MenuItem value="paidStatus">Unpaid</MenuItem>
                     </Select>
                 </FormControl>
@@ -323,7 +345,8 @@ export default function Bills() {
                             padding: 2,
                             paddingLeft: 6,
                             opacity: paidBills[bill.id] ? 0.5 : 1,
-                            backgroundColor: paidBills[bill.id] ? grey[200] : 'white',
+                            backgroundColor: paidBills[bill.id] ? '#a9b1fc' : '#e1bee7',
+                            borderRadius: '10px'
                         }}>
                             {/* Floating Checkbox in Top-Left */}
                             <Checkbox
@@ -360,6 +383,8 @@ export default function Bills() {
                             {/* Left section: Name and Amount */}
                             <Box sx={{ flexGrow: 1 }}>
                                 <Typography variant="h6" sx={{
+                                    fontWeight: 'Bold',
+                                    fontSize: 17,
                                     textDecoration: paidBills[bill.id] ? 'line-through' : 'none'
                                 }}>{bill.name}</Typography>
                                 <Typography variant="body1" color="textSecondary" sx={{ textDecoration: paidBills[bill.id] ? 'line-through' : 'none' }}>
