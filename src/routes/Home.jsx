@@ -12,8 +12,105 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-// sample data for the chart
-const chartData = [
+// Sample data for the chart 
+const schoolSuppliesData = [
+  { month: 'JAN', amount: 50 },   
+  { month: 'FEB', amount: 80 },  
+  { month: 'MAR', amount: 30 },   
+  { month: 'APR', amount: 100 },  
+  { month: 'MAY', amount: 60 },  
+];
+
+const tuitonData = [
+  { month: 'JAN', amount: 7000 },  
+  { month: 'FEB', amount: 7000 },    
+  { month: 'MAR', amount: 6000 },    
+  { month: 'APR', amount: 8000 },   
+  { month: 'MAY', amount: 7000 },    
+];
+
+const workData = [
+  { month: 'JAN', amount: 5000 },    
+  { month: 'FEB', amount: 5000 },    
+  { month: 'MAR', amount: 5000 },    
+  { month: 'APR', amount: 5000 },   
+  { month: 'MAY', amount: 5000 },    
+];
+
+const personalData = [
+  { month: 'JAN', amount: 500 },    
+  { month: 'FEB', amount: 890 },    
+  { month: 'MAR', amount: 340 },    
+  { month: 'APR', amount: 100 },   
+  { month: 'MAY', amount: 60 },    
+];
+
+const entertainmentData = [
+  { month: 'JAN', amount: 50 },    
+  { month: 'FEB', amount: 40 },    
+  { month: 'MAR', amount: 30 },    
+  { month: 'APR', amount: 100 },   
+  { month: 'MAY', amount: 60 },    
+];
+const rentData = [
+  { month: 'JAN', amount: 2000 },    
+  { month: 'FEB', amount: 2000 },    
+  { month: 'MAR', amount: 2000 },    
+  { month: 'APR', amount: 2000 },   
+  { month: 'MAY', amount: 2000 },    
+];
+const groceriesData = [
+  { month: 'JAN', amount: 300 },    
+  { month: 'FEB', amount: 200 },    
+  { month: 'MAR', amount: 300 },    
+  { month: 'APR', amount: 100 },   
+  { month: 'MAY', amount: 600 },    
+];
+const mortageData = [
+  { month: 'JAN', amount: 3000 },    
+  { month: 'FEB', amount: 3000 },    
+  { month: 'MAR', amount: 3000 },    
+  { month: 'APR', amount: 3000 },   
+  { month: 'MAY', amount: 3000 },    
+];
+const familyExpensesData = [
+  { month: 'JAN', amount: 500 },    
+  { month: 'FEB', amount: 800 },    
+  { month: 'MAR', amount: 320 },    
+  { month: 'APR', amount: 1300 },   
+  { month: 'MAY', amount: 690 },    
+];
+const healthcareData = [
+  { month: 'JAN', amount: 50 },    
+  { month: 'FEB', amount: 840 },    
+  { month: 'MAR', amount: 320 },    
+  { month: 'APR', amount: 100 },   
+  { month: 'MAY', amount: 630 },    
+];
+const travelData = [
+  { month: 'JAN', amount: 0 },    
+  { month: 'FEB', amount: 0 },    
+  { month: 'MAR', amount: 3900 },    
+  { month: 'APR', amount: 0 },   
+  { month: 'MAY', amount: 600 },    
+];
+const hobbiesData = [
+  { month: 'JAN', amount: 50 },    
+  { month: 'FEB', amount: 40 },    
+  { month: 'MAR', amount: 80 },    
+  { month: 'APR', amount: 100 },   
+  { month: 'MAY', amount: 60 },    
+];
+const householdData = [
+  { month: 'JAN', amount: 400 },    
+  { month: 'FEB', amount: 300 },    
+  { month: 'MAR', amount: 780 },    
+  { month: 'APR', amount: 100 },   
+  { month: 'MAY', amount: 610 },    
+];
+
+// Default empty chart data
+const defaultChartData = [
   { month: 'JAN', amount: 200 },
   { month: 'FEB', amount: 250 },
   { month: 'MAR', amount: 200 },
@@ -21,7 +118,7 @@ const chartData = [
   { month: 'MAY', amount: 150 },
 ];
 
-// persona-based categories
+// Persona-based categories
 const personaCategories = {
   student: ['school-supplies', 'tuition', 'work', 'personal', 'entertainment'],
   'single-working-adult': ['rent', 'groceries', 'entertainment', 'work', 'personal'],
@@ -30,10 +127,10 @@ const personaCategories = {
   retired: ['healthcare', 'travel', 'hobbies', 'personal', 'entertainment'],
 };
 
-// default categories
+// Default categories
 const defaultCategories = ['personal', 'entertainment', 'work'];
 
-// sample recent activity
+// Sample recent activity
 const baseRecentActivity = [
   {
     title: 'Money For iPhone16',
@@ -60,7 +157,7 @@ const baseRecentActivity = [
   },
 ];
 
-// map category values to display names
+// Map category values to display names
 const getCategoryDisplayName = (category) => {
   switch (category) {
     case 'school-supplies':
@@ -95,11 +192,12 @@ const getCategoryDisplayName = (category) => {
 };
 
 export default function Home() {
-  const [view, setView] = React.useState('spend');
-  const [category, setCategory] = React.useState('');
+  const [view, setView] = React.useState('spend'); // Default view is "spend"
+  const [category, setCategory] = React.useState(''); // Start with empty category
   const [categories, setCategories] = React.useState(defaultCategories);
   const [recentActivity] = React.useState(baseRecentActivity);
-  const [userName, setUserName] = useState(''); // State to hold the user's name
+  const [userName, setUserName] = useState('');
+  const [chartDataState, setChartDataState] = React.useState(defaultChartData); // Start with empty chart
 
   // Load persona and name from localStorage
   useEffect(() => {
@@ -108,7 +206,7 @@ export default function Home() {
       const { persona, name } = JSON.parse(savedProfile);
       const newCategories = personaCategories[persona] || defaultCategories;
       setCategories(newCategories);
-      setUserName(name); // Set the user's name from localStorage
+      setUserName(name);
     }
   }, []);
 
@@ -119,7 +217,74 @@ export default function Home() {
   };
 
   const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
+    const selectedCategory = event.target.value;
+    setCategory(selectedCategory);
+    // Update chart data based on category
+    if (selectedCategory === 'school-supplies') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(schoolSuppliesData);
+      }
+    } 
+    if (selectedCategory === 'tuiton') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(tuitonData);
+      }
+    } 
+    if (selectedCategory === 'work') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(workData);
+      }
+    } 
+    if (selectedCategory === 'rent') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(rentData);
+      }
+    }
+    if (selectedCategory === 'groceries') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(groceriesData);
+      }
+    } 
+    if (selectedCategory === 'entertainment') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(entertainmentData);
+      }
+    } 
+    if (selectedCategory === 'family-expenses') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(familyExpensesData);
+      }
+    } 
+    if (selectedCategory === 'household') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(householdData);
+      }
+    } 
+    if (selectedCategory === 'healthcare') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(healthcareData);
+      }
+    } 
+    if (selectedCategory === 'travel') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(travelData);
+      }
+    } 
+    if (selectedCategory === 'hobbies') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(hobbiesData);
+      }
+    } 
+    if (selectedCategory === 'personal') {
+      if(view === 'spend' || view === 'receive') {
+        setChartDataState(personalData);
+      }
+    } 
+    
+    else {
+      // For other categories, show empty data (can be expanded later)
+      setChartDataState(defaultChartData);
+    }
   };
 
   // Chart legend component
@@ -143,32 +308,35 @@ export default function Home() {
   // Determine the progress title based on whether a name is set
   const progressTitle = userName ? `${userName}'s Progress` : 'Your Progress';
 
+  // Set goal line based on view
+  const goalLineValue = view === 'spend' ? 600 : 800;
+
   return (
     <Box sx={{ p: 2 }}>
-      {/* header */}
+      {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
           {progressTitle}
         </Typography>
       </Box>
 
-      {/* chart section */}
+      {/* Chart section */}
       <Box sx={{ mb: 3 }}>
         <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+          <LineChart data={chartDataState} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
             <XAxis dataKey="month" stroke="#000000" />
-            <YAxis stroke="#000000" domain={[0, 300]} />
+            <YAxis stroke="#000000" domain={[0, view === 'spend' ? 700 : 900]} /> {/* Adjust Y-axis domain */}
             <Tooltip />
-            <ReferenceLine y={200} label={{ position: 'left', fill: '#ff0000' }} stroke="#ff0000" strokeDasharray="3 3" />
+            <ReferenceLine y={goalLineValue} label={{ position: 'left', fill: '#ff0000' }} stroke="#ff0000" strokeDasharray="3 3" />
             <Line type="monotone" dataKey="amount" stroke="#000000" strokeWidth={2} dot={{ r: 5 }} activeDot={{ r: 8 }} />
-            <ReferenceLine x="MAR" label={{ position: 'right', fill: '#0000ff' }} stroke="#0000ff" strokeDasharray="3 3" />
+            <ReferenceLine x="APR" label={{ position: 'right', fill: '#0000ff' }} stroke="#0000ff" strokeDasharray="3 3" />
           </LineChart>
         </ResponsiveContainer>
         <ChartKey />
       </Box>
 
-      {/* toggle between spending and receiving */}
+      {/* Toggle between spending and receiving */}
       <Box sx={{ mb: 3 }}>
         <ToggleButtonGroup
           value={view}
@@ -204,7 +372,7 @@ export default function Home() {
           </ToggleButton>
         </ToggleButtonGroup>
 
-        {/* category dropdown */}
+        {/* Category dropdown */}
         <FormControl fullWidth>
           <InputLabel>Choose a category to see its chart</InputLabel>
           <Select
@@ -222,7 +390,7 @@ export default function Home() {
         </FormControl>
       </Box>
 
-      {/* recent activity */}
+      {/* Recent activity */}
       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
         Your Recent Activity
       </Typography>
