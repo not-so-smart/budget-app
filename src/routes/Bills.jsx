@@ -264,14 +264,14 @@ export default function Bills() {
                             sx={{
                                 width: 80,
                                 height: 80,
-                                backgroundColor: '#3f5ceb',
+                                backgroundColor: 'black',
                                 border: '2px solid black',
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}
                         >
-                            <Typography variant="h5" color="black">
+                            <Typography variant="h5" color="white">
                                 {paidBillsCount}
                             </Typography>
                         </Avatar>
@@ -345,7 +345,7 @@ export default function Bills() {
                             padding: 2,
                             paddingLeft: 6,
                             opacity: paidBills[bill.id] ? 0.5 : 1,
-                            backgroundColor: paidBills[bill.id] ? '#3f5ceb' : '#e1bee7',
+                            backgroundColor: paidBills[bill.id] ? 'black' : '#e1bee7',
                             borderRadius: '10px'
                         }}>
                             {/* Floating Checkbox in Top-Left */}
@@ -383,11 +383,15 @@ export default function Bills() {
                             {/* Left section: Name and Amount */}
                             <Box sx={{ flexGrow: 1 }}>
                                 <Typography variant="h6" sx={{
+                                    color: paidBills[bill.id] ? 'white' : 'black',
                                     fontWeight: 'Bold',
                                     fontSize: 17,
                                     textDecoration: paidBills[bill.id] ? 'line-through' : 'none'
                                 }}>{bill.name}</Typography>
-                                <Typography variant="body1" color="textSecondary" sx={{ textDecoration: paidBills[bill.id] ? 'line-through' : 'none' }}>
+                                <Typography variant="body1" sx={{ 
+                                        textDecoration: paidBills[bill.id] ? 'line-through' : 'none' ,
+                                        color: paidBills[bill.id] ? 'white' : 'black'
+                                    }}>
                                     Amount: ${bill.amount}
                                 </Typography>
                             </Box>
@@ -409,7 +413,9 @@ export default function Bills() {
                             </Box>
                             
                             {/* Due Date */}
-                            <Typography variant="body2" color="textSecondary">
+                            <Typography variant="body2" sx={{
+                                color: paidBills[bill.id] ? 'white' : 'black',
+                            }}>
                                 Due: {bill.dueDate}
                             </Typography>
                         </Box>
