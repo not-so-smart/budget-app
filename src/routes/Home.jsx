@@ -60,10 +60,10 @@ const rentData = [
   { month: 'MAY', amount: 2000 },    
 ];
 const groceriesData = [
-  { month: 'JAN', amount: 300 },    
-  { month: 'FEB', amount: 200 },    
-  { month: 'MAR', amount: 300 },    
-  { month: 'APR', amount: 100 },   
+  { month: 'JAN', amount: 900 },    
+  { month: 'FEB', amount: 400 },    
+  { month: 'MAR', amount: 1000 },    
+  { month: 'APR', amount: 600 },   
   { month: 'MAY', amount: 600 },    
 ];
 const mortageData = [
