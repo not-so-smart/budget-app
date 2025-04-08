@@ -169,6 +169,9 @@ export default function Goals() {
                                     savingsGoals.reduce((sum, goal) => sum + goal.target, 0)
                                     ? '#bfe4bf' // Green if current savings >= target
                                     : '#ffb7b7', // Red otherwise
+                                ...(savingsGoals.reduce((sum, goal) => sum + goal.value, 0) >= 100000000 && {
+                                    fontSize: '1.5rem', // Shrink font size if number is large
+                                }),
                             }}
                         >
                             ${savingsGoals.reduce((sum, goal) => sum + goal.value, 0)}
@@ -294,6 +297,9 @@ export default function Goals() {
                                     spendingGoals.reduce((sum, goal) => sum + goal.target, 0)
                                     ? '#18b87b' // Green if current spending <= target
                                     : '#b81818', // Red otherwise
+                                ...(spendingGoals.reduce((sum, goal) => sum + goal.value, 0) >= 100000000 && {
+                                    fontSize: '1.5rem', // Shrink font size if number is large
+                                }),
                             }}
                         >
                             ${spendingGoals.reduce((sum, goal) => sum + goal.value, 0)}
