@@ -219,13 +219,13 @@ export default function Goals() {
                                     padding: '5px 10px',
                                     border: '1px solid #ccc',
                                     borderRadius: '8px',
-                                    backgroundColor: '#f0f0f0',
+                                    backgroundColor: 'black',
                                     cursor: 'pointer',
-                                    '&:hover': { backgroundColor: '#e0e0e0' },
+                                    '&:hover': { backgroundColor: '#e1bee7' },
                                 }}
                             >
                                 {/* Category Name */}
-                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#fbfbfb' }}>
                                     {category.name}
                                 </Typography>
                                 {/* Progress indicator */}
@@ -347,7 +347,7 @@ export default function Goals() {
                                     padding: '5px 10px',
                                     border: '1px solid #ccc',
                                     borderRadius: '8px',
-                                    backgroundColor: '#f0f0f0',
+                                    backgroundColor: '#e1bee7',
                                     cursor: 'pointer',
                                     '&:hover': { backgroundColor: '#e0e0e0' },
                                 }}
