@@ -264,7 +264,7 @@ export default function Bills() {
                             sx={{
                                 width: 80,
                                 height: 80,
-                                backgroundColor: '#a9b1fc',
+                                backgroundColor: '#3f5ceb',
                                 border: '2px solid black',
                                 display: 'flex',
                                 justifyContent: 'center',
@@ -345,7 +345,7 @@ export default function Bills() {
                             padding: 2,
                             paddingLeft: 6,
                             opacity: paidBills[bill.id] ? 0.5 : 1,
-                            backgroundColor: paidBills[bill.id] ? '#a9b1fc' : '#e1bee7',
+                            backgroundColor: paidBills[bill.id] ? '#3f5ceb' : '#e1bee7',
                             borderRadius: '10px'
                         }}>
                             {/* Floating Checkbox in Top-Left */}
