@@ -46,11 +46,11 @@ const personalData = [
 ];
 
 const entertainmentData = [
-  { month: 'JAN', amount: 50 },    
+  { month: 'JAN', amount: 10 },    
   { month: 'FEB', amount: 40 },    
-  { month: 'MAR', amount: 30 },    
+  { month: 'MAR', amount: 300 },    
   { month: 'APR', amount: 100 },   
-  { month: 'MAY', amount: 60 },    
+  { month: 'MAY', amount: 70 },    
 ];
 const rentData = [
   { month: 'JAN', amount: 2000 },    
