@@ -520,7 +520,7 @@ export default function Categories() {
         display: 'flex',
         justifyContent: 'center',
         gap: 2,
-        position: 'sticky',
+        position: 'relative',
         bottom: 20,
         padding: 2
       }}>
