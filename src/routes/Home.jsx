@@ -147,6 +147,13 @@ const baseRecentActivity = [
     category: 'personal',
   },
   {
+    title: 'Student Loan Payment',
+    type: 'BILL DUE',
+    amount: '$200.00',
+    date: '05/15/2025',
+    category: 'personal',
+  },
+  {
     title: 'Movie Ticket @ AMC',
     type: 'SPENDINGS',
     amount: '$17.89',
@@ -330,11 +337,11 @@ export default function Home() {
 
       {/* Toggle between spending and saving */}
       <Box sx={{ mb: 3 }}>
-        <ToggleButtonGroup
+      <ToggleButtonGroup
           value={view}
           exclusive
           onChange={handleViewChange}
-          sx={{ mb: 2, width: '100%', justifyContent: 'center' }}
+          sx={{ mb: 2, width: '100%', justifyContent: 'center',  border: '2px solid #000', borderRadius: '8px',}}
         >
           <ToggleButton
             value="spend"
@@ -342,8 +349,11 @@ export default function Home() {
               flex: 1,
               bgcolor: view === 'spend' ? '#e0e0e0' : '#ce93d8',
               color: view === 'spend' ? '#ffffff' : '#000000',
+              borderRight: '2px solid #000', 
+              borderRadius: 0,
               '&:hover': {
                 bgcolor: view === 'spend' ? '#ab47bc' : '#ce93d8',
+                
               },
             }}
           >
@@ -355,14 +365,17 @@ export default function Home() {
               flex: 1,
               bgcolor: view === 'save' ? '#e0e0e0' : '#ce93d8',
               color: view === 'save' ? '#ffffff' : '#000000',
+              borderRadius: 0,
               '&:hover': {
                 bgcolor: view === 'save' ? '#ab47bc' : '#ce93d8',
+                
               },
             }}
           >
             SAVE
           </ToggleButton>
         </ToggleButtonGroup>
+
 
         {/* Category dropdown */}
         <FormControl fullWidth>
