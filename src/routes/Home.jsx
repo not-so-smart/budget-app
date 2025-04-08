@@ -12,104 +12,112 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
 
-// Sample data for the chart 
+// chart data
 const schoolSuppliesData = [
-  { month: 'JAN', amount: 50 },   
-  { month: 'FEB', amount: 80 },  
-  { month: 'MAR', amount: 30 },   
-  { month: 'APR', amount: 100 },  
-  { month: 'MAY', amount: 60 },  
+  { month: 'JAN', amount: 50 },
+  { month: 'FEB', amount: 80 },
+  { month: 'MAR', amount: 30 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 60 },
 ];
 
-const tuitonData = [
-  { month: 'JAN', amount: 7000 },  
-  { month: 'FEB', amount: 7000 },    
-  { month: 'MAR', amount: 6000 },    
-  { month: 'APR', amount: 8000 },   
-  { month: 'MAY', amount: 7000 },    
+const tuitionData = [
+  { month: 'JAN', amount: 7000 },
+  { month: 'FEB', amount: 7000 },
+  { month: 'MAR', amount: 6000 },
+  { month: 'APR', amount: 8000 },
+  { month: 'MAY', amount: 7000 },
 ];
 
 const workData = [
-  { month: 'JAN', amount: 5000 },    
-  { month: 'FEB', amount: 5000 },    
-  { month: 'MAR', amount: 5000 },    
-  { month: 'APR', amount: 5000 },   
-  { month: 'MAY', amount: 5000 },    
+  { month: 'JAN', amount: 5000 },
+  { month: 'FEB', amount: 5000 },
+  { month: 'MAR', amount: 5000 },
+  { month: 'APR', amount: 5000 },
+  { month: 'MAY', amount: 5000 },
 ];
 
 const personalData = [
-  { month: 'JAN', amount: 500 },    
-  { month: 'FEB', amount: 890 },    
-  { month: 'MAR', amount: 340 },    
-  { month: 'APR', amount: 100 },   
-  { month: 'MAY', amount: 60 },    
+  { month: 'JAN', amount: 500 },
+  { month: 'FEB', amount: 890 },
+  { month: 'MAR', amount: 340 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 60 },
 ];
 
 const entertainmentData = [
-  { month: 'JAN', amount: 10 },    
-  { month: 'FEB', amount: 40 },    
-  { month: 'MAR', amount: 300 },    
-  { month: 'APR', amount: 100 },   
-  { month: 'MAY', amount: 70 },    
-];
-const rentData = [
-  { month: 'JAN', amount: 2000 },    
-  { month: 'FEB', amount: 2000 },    
-  { month: 'MAR', amount: 2000 },    
-  { month: 'APR', amount: 2000 },   
-  { month: 'MAY', amount: 2000 },    
-];
-const groceriesData = [
-  { month: 'JAN', amount: 900 },    
-  { month: 'FEB', amount: 400 },    
-  { month: 'MAR', amount: 1000 },    
-  { month: 'APR', amount: 600 },   
-  { month: 'MAY', amount: 600 },    
-];
-const mortageData = [
-  { month: 'JAN', amount: 3000 },    
-  { month: 'FEB', amount: 3000 },    
-  { month: 'MAR', amount: 3000 },    
-  { month: 'APR', amount: 3000 },   
-  { month: 'MAY', amount: 3000 },    
-];
-const familyExpensesData = [
-  { month: 'JAN', amount: 500 },    
-  { month: 'FEB', amount: 800 },    
-  { month: 'MAR', amount: 320 },    
-  { month: 'APR', amount: 1300 },   
-  { month: 'MAY', amount: 690 },    
-];
-const healthcareData = [
-  { month: 'JAN', amount: 50 },    
-  { month: 'FEB', amount: 840 },    
-  { month: 'MAR', amount: 320 },    
-  { month: 'APR', amount: 100 },   
-  { month: 'MAY', amount: 630 },    
-];
-const travelData = [
-  { month: 'JAN', amount: 0 },    
-  { month: 'FEB', amount: 0 },    
-  { month: 'MAR', amount: 3900 },    
-  { month: 'APR', amount: 0 },   
-  { month: 'MAY', amount: 600 },    
-];
-const hobbiesData = [
-  { month: 'JAN', amount: 50 },    
-  { month: 'FEB', amount: 40 },    
-  { month: 'MAR', amount: 80 },    
-  { month: 'APR', amount: 100 },   
-  { month: 'MAY', amount: 60 },    
-];
-const householdData = [
-  { month: 'JAN', amount: 400 },    
-  { month: 'FEB', amount: 300 },    
-  { month: 'MAR', amount: 780 },    
-  { month: 'APR', amount: 100 },   
-  { month: 'MAY', amount: 610 },    
+  { month: 'JAN', amount: 50 },
+  { month: 'FEB', amount: 40 },
+  { month: 'MAR', amount: 30 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 60 },
 ];
 
-// Default empty chart data
+const rentData = [
+  { month: 'JAN', amount: 2000 },
+  { month: 'FEB', amount: 2000 },
+  { month: 'MAR', amount: 2000 },
+  { month: 'APR', amount: 2000 },
+  { month: 'MAY', amount: 2000 },
+];
+
+const groceriesData = [
+  { month: 'JAN', amount: 300 },
+  { month: 'FEB', amount: 200 },
+  { month: 'MAR', amount: 300 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 600 },
+];
+
+const mortgageData = [
+  { month: 'JAN', amount: 3000 },
+  { month: 'FEB', amount: 3000 },
+  { month: 'MAR', amount: 3000 },
+  { month: 'APR', amount: 3000 },
+  { month: 'MAY', amount: 3000 },
+];
+
+const familyExpensesData = [
+  { month: 'JAN', amount: 500 },
+  { month: 'FEB', amount: 800 },
+  { month: 'MAR', amount: 320 },
+  { month: 'APR', amount: 1300 },
+  { month: 'MAY', amount: 690 },
+];
+
+const healthcareData = [
+  { month: 'JAN', amount: 50 },
+  { month: 'FEB', amount: 840 },
+  { month: 'MAR', amount: 320 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 630 },
+];
+
+const travelData = [
+  { month: 'JAN', amount: 0 },
+  { month: 'FEB', amount: 0 },
+  { month: 'MAR', amount: 3900 },
+  { month: 'APR', amount: 0 },
+  { month: 'MAY', amount: 600 },
+];
+
+const hobbiesData = [
+  { month: 'JAN', amount: 50 },
+  { month: 'FEB', amount: 40 },
+  { month: 'MAR', amount: 80 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 60 },
+];
+
+const householdData = [
+  { month: 'JAN', amount: 400 },
+  { month: 'FEB', amount: 300 },
+  { month: 'MAR', amount: 780 },
+  { month: 'APR', amount: 100 },
+  { month: 'MAY', amount: 610 },
+];
+
+// default chart data
 const defaultChartData = [
   { month: 'JAN', amount: 200 },
   { month: 'FEB', amount: 250 },
@@ -118,7 +126,7 @@ const defaultChartData = [
   { month: 'MAY', amount: 150 },
 ];
 
-// Persona-based categories
+// persona-based categories
 const personaCategories = {
   student: ['school-supplies', 'tuition', 'work', 'personal', 'entertainment'],
   'single-working-adult': ['rent', 'groceries', 'entertainment', 'work', 'personal'],
@@ -127,10 +135,10 @@ const personaCategories = {
   retired: ['healthcare', 'travel', 'hobbies', 'personal', 'entertainment'],
 };
 
-// Default categories
+// default categories
 const defaultCategories = ['personal', 'entertainment', 'work'];
 
-// Sample recent activity
+// sample recent activity
 const baseRecentActivity = [
   {
     title: 'Money For iPhone16',
@@ -157,7 +165,7 @@ const baseRecentActivity = [
   },
 ];
 
-// Map category values to display names
+// map category values to display names
 const getCategoryDisplayName = (category) => {
   switch (category) {
     case 'school-supplies':
@@ -191,15 +199,50 @@ const getCategoryDisplayName = (category) => {
   }
 };
 
+// map categories to their data
+const categoryDataMap = {
+  'school-supplies': schoolSuppliesData,
+  tuition: tuitionData,
+  work: workData,
+  personal: personalData,
+  entertainment: entertainmentData,
+  rent: rentData,
+  groceries: groceriesData,
+  mortgage: mortgageData,
+  'family-expenses': familyExpensesData,
+  healthcare: healthcareData,
+  travel: travelData,
+  hobbies: hobbiesData,
+  household: householdData,
+};
+
+// define category-specific goals for "spend" and "save"
+const categoryGoals = {
+  'school-supplies': { spend: 200, save: 300 },
+  tuition: { spend: 1, save: 12000 },
+  work: { spend: 1, save: 8000 },
+  personal: { spend: 1000, save: 1500 },
+  entertainment: { spend: 200, save: 300 },
+  rent: { spend: 1, save: 3000 },
+  groceries: { spend: 800, save: 1000 },
+  mortgage: { spend: 1, save: 4000 },
+  'family-expenses': { spend: 1500, save: 2000 },
+  healthcare: { spend: 1000, save: 1500 },
+  travel: { spend: 4000, save: 5000 },
+  hobbies: { spend: 200, save: 300 },
+  household: { spend: 1000, save: 1500 },
+  default: { spend: 600, save: 800 }, // fallback for no category selected
+};
+
 export default function Home() {
-  const [view, setView] = React.useState('spend'); // Default view is "spend"
-  const [category, setCategory] = React.useState(''); // Start with empty category
+  const [view, setView] = React.useState('spend'); 
+  const [category, setCategory] = React.useState(''); 
   const [categories, setCategories] = React.useState(defaultCategories);
   const [recentActivity] = React.useState(baseRecentActivity);
   const [userName, setUserName] = useState('');
-  const [chartDataState, setChartDataState] = React.useState(defaultChartData); // Start with empty chart
+  const [chartDataState, setChartDataState] = React.useState(defaultChartData); 
 
-  // Load persona and name from localStorage
+  // load persona and name from localStorage
   useEffect(() => {
     const savedProfile = localStorage.getItem('profileData');
     if (savedProfile) {
@@ -219,75 +262,15 @@ export default function Home() {
   const handleCategoryChange = (event) => {
     const selectedCategory = event.target.value;
     setCategory(selectedCategory);
-    // Update chart data based on category
-    if (selectedCategory === 'school-supplies') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(schoolSuppliesData);
-      }
-    } 
-    if (selectedCategory === 'tuiton') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(tuitonData);
-      }
-    } 
-    if (selectedCategory === 'work') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(workData);
-      }
-    } 
-    if (selectedCategory === 'rent') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(rentData);
-      }
-    }
-    if (selectedCategory === 'groceries') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(groceriesData);
-      }
-    } 
-    if (selectedCategory === 'entertainment') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(entertainmentData);
-      }
-    } 
-    if (selectedCategory === 'family-expenses') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(familyExpensesData);
-      }
-    } 
-    if (selectedCategory === 'household') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(householdData);
-      }
-    } 
-    if (selectedCategory === 'healthcare') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(healthcareData);
-      }
-    } 
-    if (selectedCategory === 'travel') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(travelData);
-      }
-    } 
-    if (selectedCategory === 'hobbies') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(hobbiesData);
-      }
-    } 
-    if (selectedCategory === 'personal') {
-      if(view === 'spend' || view === 'receive') {
-        setChartDataState(personalData);
-      }
-    } 
-    
-    else {
-      // For other categories, show empty data (can be expanded later)
+    // update chart data based on category
+    if (selectedCategory && categoryDataMap[selectedCategory]) {
+      setChartDataState(categoryDataMap[selectedCategory]);
+    } else {
       setChartDataState(defaultChartData);
     }
   };
 
-  // Chart legend component
+  // chart legend component
   const ChartKey = () => (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
@@ -305,11 +288,17 @@ export default function Home() {
     </Box>
   );
 
-  // Determine the progress title based on whether a name is set
+  // determine the progress title based on whether a name is set
   const progressTitle = userName ? `${userName}'s Progress` : 'Your Progress';
 
-  // Set goal line based on view
-  const goalLineValue = view === 'spend' ? 600 : 800;
+  // set goal line based on view and category
+  const goalLineValue = category && categoryGoals[category]
+    ? categoryGoals[category][view]
+    : categoryGoals.default[view];
+
+  // dynamically set Y-axis domain based on chart data and goal
+  const maxDataValue = Math.max(...chartDataState.map((data) => data.amount));
+  const yAxisMax = Math.max(maxDataValue * 1.2, goalLineValue * 1.2); 
 
   return (
     <Box sx={{ p: 2 }}>
@@ -326,7 +315,7 @@ export default function Home() {
           <LineChart data={chartDataState} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
             <XAxis dataKey="month" stroke="#000000" />
-            <YAxis stroke="#000000" domain={[0, view === 'spend' ? 700 : 900]} /> {/* Adjust Y-axis domain */}
+            <YAxis stroke="#000000" domain={[0, yAxisMax]} /> 
             <Tooltip />
             <ReferenceLine y={goalLineValue} label={{ position: 'left', fill: '#ff0000' }} stroke="#ff0000" strokeDasharray="3 3" />
             <Line type="monotone" dataKey="amount" stroke="#000000" strokeWidth={2} dot={{ r: 5 }} activeDot={{ r: 8 }} />
@@ -336,7 +325,7 @@ export default function Home() {
         <ChartKey />
       </Box>
 
-      {/* Toggle between spending and receiving */}
+      {/* Toggle between spending and saving */}
       <Box sx={{ mb: 3 }}>
         <ToggleButtonGroup
           value={view}
@@ -358,17 +347,17 @@ export default function Home() {
             SPEND
           </ToggleButton>
           <ToggleButton
-            value="receive"
+            value="save"
             sx={{
               flex: 1,
-              bgcolor: view === 'receive' ? '#e0e0e0' : '#ce93d8',
-              color: view === 'receive' ? '#ffffff' : '#000000',
+              bgcolor: view === 'save' ? '#e0e0e0' : '#ce93d8',
+              color: view === 'save' ? '#ffffff' : '#000000',
               '&:hover': {
-                bgcolor: view === 'receive' ? '#ab47bc' : '#ce93d8',
+                bgcolor: view === 'save' ? '#ab47bc' : '#ce93d8',
               },
             }}
           >
-            RECEIVE
+            SAVE
           </ToggleButton>
         </ToggleButtonGroup>
 
