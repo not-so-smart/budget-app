@@ -427,7 +427,7 @@ export default function Categories() {
 
       {/* scrolling through the cards*/}
       <Box sx={{ 
-        maxHeight: '300px', 
+        maxHeight: '290px', 
         overflowY: 'auto', 
         mb: 2,
         mt: 2,
