@@ -83,7 +83,7 @@ export default function Bills() {
     };
     //this may need to be changed. i need to dynamically check when persona changes in the submit on profile page
     const [bills, setBills] = useState(() => {
-        return loadFromLocalStorage('billData', defaultBillsForPersona.none);
+        return loadFromLocalStorage('bills', defaultBillsForPersona.none);
     });
 
     useEffect(() => {
@@ -94,10 +94,11 @@ export default function Bills() {
         if (personaChanged) {
             console.log("new persona")
             const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['none'];
-            localStorage.setItem('billData', JSON.stringify(defaultBills));
+            console.log(defaultBills)
+            localStorage.setItem('bills', JSON.stringify(defaultBills));
             localStorage.setItem('lastPersona', persona);
             localStorage.setItem('personaChanged', 'false');
-            setBills(defaultBills);
+            setBills([...defaultBills]);
         }
     }, []);
       
@@ -242,7 +243,7 @@ export default function Bills() {
     }, [bills, paidBills, sortOption, categoryColors]);
 
 
-    
+    console.log("👀 Rendered bills:", bills);
     return (
         <Box sx={{ padding: 2}}>
             <Typography variant='h5' gutterBottom sx={{ fontWeight: 'bold' }}>
