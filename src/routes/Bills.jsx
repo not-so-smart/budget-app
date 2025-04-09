@@ -92,6 +92,7 @@ export default function Bills() {
       
         if (personaChanged) {
           console.log("persona changed")
+          console.log("persona is", persona)
           const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['none'];
           localStorage.setItem('billData', JSON.stringify(defaultBills));
           localStorage.setItem('lastPersona', persona); // update current as new "last"
