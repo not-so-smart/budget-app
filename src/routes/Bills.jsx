@@ -83,24 +83,30 @@ export default function Bills() {
     };
     //this may need to be changed. i need to dynamically check when persona changes in the submit on profile page
     const [bills, setBills] = useState(() => {
-        return loadFromLocalStorage('bills', defaultBillsForPersona.none);
-    });
-
-    useEffect(() => {
         const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
         const persona = profileData.persona || 'none';
+      
         const personaChanged = localStorage.getItem('personaChanged') === 'true';
-    
+      
+        const savedBills = JSON.parse(localStorage.getItem('billData') || 'null');
+      
         if (personaChanged) {
-            console.log("new persona")
-            const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['none'];
-            console.log(defaultBills)
-            localStorage.setItem('bills', JSON.stringify(defaultBills));
-            localStorage.setItem('lastPersona', persona);
-            localStorage.setItem('personaChanged', 'false');
-            setBills([...defaultBills]);
+          console.log("persona changed")
+          const defaultBills = defaultBillsForPersona[persona] || defaultBillsForPersona['none'];
+          localStorage.setItem('billData', JSON.stringify(defaultBills));
+          localStorage.setItem('lastPersona', persona); // update current as new "last"
+          localStorage.setItem('personaChanged', 'false'); // reset flag
+          return defaultBills;
         }
-    }, []);
+      
+        return savedBills || (defaultBillsForPersona[persona] || {});
+      });
+
+      useEffect(() => {
+        localStorage.setItem('billData', JSON.stringify(bills));
+      }, [bills]);
+
+      
       
 
     const [sortOption, setSortOption] = useState(() => {
@@ -243,7 +249,7 @@ export default function Bills() {
     }, [bills, paidBills, sortOption, categoryColors]);
 
 
-    console.log("👀 Rendered bills:", bills);
+    
     return (
         <Box sx={{ padding: 2}}>
             <Typography variant='h5' gutterBottom sx={{ fontWeight: 'bold' }}>
