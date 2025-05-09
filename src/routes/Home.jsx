@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -225,7 +223,7 @@ const categoryGoals = {
   default: { spend: 600, save: 800 },
 };
 
-// Add getCategoryColor function from the first code
+// Add getCategoryColor function
 const getCategoryColor = (category) => {
   switch (category) {
     case 'school-supplies':
@@ -269,8 +267,9 @@ export default function Home() {
     }
   }, []);
 
-  const handleViewChange = (event, newView) => {
-    if (newView !== null) {
+  const handleViewChange = (event) => {
+    const newView = event.target.value;
+    if (newView) {
       setView(newView);
     }
   };
@@ -289,7 +288,7 @@ export default function Home() {
   const ChartKey = () => (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mr: 3 }}>
-        <Box sx={{ width: 20, height: 0, borderTop: '2px dashed #ff0000', mr: 1 }} />
+        <Box sx={{ width: 20, height: 0, borderTop: '2px dashed #8A0000', mr: 1 }} />
         <Typography variant="body2" sx={{ color: 'black' }}>
           GOAL
         </Typography>
@@ -319,70 +318,24 @@ export default function Home() {
         </Typography>
       </Box>
 
-      {/* Chart section (exactly as in the original second code) */}
-      <Box sx={{ mb: 3 }}>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={chartDataState} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis dataKey="month" stroke="#000000" />
-            <YAxis stroke="#000000" domain={[0, yAxisMax]} />
-            <Tooltip />
-            <ReferenceLine y={goalLineValue} label={{ position: 'left', fill: '#ff0000' }} stroke="#ff0000" strokeDasharray="3 3" />
-            <Line type="monotone" dataKey="amount" stroke="#000000" strokeWidth={2} dot={{ r: 5 }} activeDot={{ r: 8 }} />
-            <ReferenceLine x="APR" label={{ position: 'right', fill: '#0000ff' }} stroke="#0000ff" strokeDasharray="3 3" />
-          </LineChart>
-        </ResponsiveContainer>
-        <ChartKey />
-      </Box>
-
-      {/* Toggle between spending and saving */}
-      <Box sx={{ mb: 3 }}>
-      <ToggleButtonGroup
-          value={view}
-          exclusive
-          onChange={handleViewChange}
-          sx={{ mb: 2, width: '100%', justifyContent: 'center',  border: '2px solid #000', borderRadius: '8px',}}
-        >
-          <ToggleButton
-            value="spend"
-            sx={{
-              flex: 1,
-              bgcolor: view === 'spend' ? '#e0e0e0' : '#ce93d8',
-              color: view === 'spend' ? '#ffffff' : '#000000',
-              borderRight: '2px solid #000', 
-              borderRadius: 0,
-              '&:hover': {
-                bgcolor: view === 'spend' ? '#ab47bc' : '#ce93d8',
-                
-              },
-            }}
+      {/* Spend/Save and Category dropdowns side by side */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <FormControl sx={{ width: '300px' }}>
+          <InputLabel>Choose to view spend or save</InputLabel>
+          <Select
+            value={view}
+            label="Choose to view spend or save"
+            onChange={handleViewChange}
           >
-            SPEND
-          </ToggleButton>
-          <ToggleButton
-            value="save"
-            sx={{
-              flex: 1,
-              bgcolor: view === 'save' ? '#e0e0e0' : '#ce93d8',
-              color: view === 'save' ? '#ffffff' : '#000000',
-              borderRadius: 0,
-              '&:hover': {
-                bgcolor: view === 'save' ? '#ab47bc' : '#ce93d8',
-                
-              },
-            }}
-          >
-            SAVE
-          </ToggleButton>
-        </ToggleButtonGroup>
-
-
-        {/* Category dropdown */}
-        <FormControl fullWidth>
-          <InputLabel>Choose a category to see its chart</InputLabel>
+            <MenuItem value="spend">Money Spent</MenuItem>
+            <MenuItem value="save">Money Saved</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl sx={{ width: '300px' }}>
+          <InputLabel>Choose to view a category</InputLabel>
           <Select
             value={category}
-            label="Choose a category to see its chart"
+            label="Choose to view a category"
             onChange={handleCategoryChange}
           >
             <MenuItem value="">SELECT</MenuItem>
@@ -395,8 +348,28 @@ export default function Home() {
         </FormControl>
       </Box>
 
-      {/* Recent activity with unified card design */}
-      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+      {/* Chart section */}
+      <Box sx={{ mb: 3 }}>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={chartDataState} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+            <XAxis dataKey="month" stroke="#000000" />
+            <YAxis 
+              stroke="#000000" 
+              domain={[0, yAxisMax]} 
+              tickFormatter={(value) => `$${value}`}
+            />
+            <Tooltip />
+            <ReferenceLine y={goalLineValue} label={{ position: 'left', fill: '#8A0000' }} stroke="#8A0000" strokeDasharray="3 3" />
+            <Line type="monotone" dataKey="amount" stroke="#000000" strokeWidth={2} dot={{ r: 5 }} activeDot={{ r: 8 }} />
+            <ReferenceLine x="MAY" label={{ position: 'right', fill: '#0000ff' }} stroke="#0000ff" strokeDasharray="3 3" />
+          </LineChart>
+        </ResponsiveContainer>
+        <ChartKey />
+      </Box>
+
+      {/* Recent activity with compact card design */}
+      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
         Your Recent Activity
       </Typography>
       {recentActivity.map((activity, index) => {
@@ -407,16 +380,16 @@ export default function Home() {
           <Card
             key={index}
             sx={{
-              mb: 2,
+              mb: 1.2,
               bgcolor: isSaving ? '#e1bee7' : '#000000',
               color: isSaving ? '#000000' : '#ffffff',
-              borderRadius: '10px',
+              borderRadius: '8px',
             }}
           >
-            <CardContent>
+            <CardContent sx={{ py: 1, px: 2, '&:last-child': { pb: 1 } }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography
-                  variant="h6"
+                  variant="body1"
                   sx={{
                     fontWeight: 'bold',
                     wordBreak: 'break-word',
@@ -424,30 +397,14 @@ export default function Home() {
                     color: isSaving ? '#000000' : '#ffffff',
                   }}
                 >
-                  {activity.title.length > 30
-                    ? `${activity.title.substring(0, 30)}...`
+                  {activity.title.length > 20
+                    ? `${activity.title.substring(0, 20)}...`
                     : activity.title}
                 </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
                 <Typography
-                  variant="body1"
-                  sx={{
-                    flex: 1,
-                    pr: 2,
-                    wordBreak: 'break-word',
-                    whiteSpace: 'pre-wrap',
-                    color: isSaving ? '#000000' : '#ffffff',
-                  }}
-                >
-                  {activity.description || (activity.status ? `${activity.status} YOU'RE AT ${activity.amount}` : activity.type || '')}
-                </Typography>
-                <Typography
-                  variant="h6"
+                  variant="body2"
                   sx={{
                     fontWeight: 'bold',
-                    minWidth: '80px',
                     textAlign: 'right',
                     color: isSaving ? '#000000' : '#ffffff',
                   }}
@@ -455,13 +412,15 @@ export default function Home() {
                   ${amountValue.toFixed(2)}
                 </Typography>
               </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
                 <Typography
-                  variant="body1"
-                  sx={{ color: isSaving ? '#000000' : '#ffffff' }}
+                  variant="body2"
+                  sx={{
+                    color: isSaving ? '#000000' : '#ffffff',
+                    wordBreak: 'break-word',
+                  }}
                 >
-                  DATE: {activity.date}
+                  {activity.description || activity.type}
                 </Typography>
                 <Chip
                   label={getCategoryDisplayName(activity.category)}
@@ -469,9 +428,16 @@ export default function Home() {
                   sx={{
                     bgcolor: getCategoryColor(activity.category),
                     color: '#000000',
+                    height: '20px',
                   }}
                 />
               </Box>
+              <Typography
+                variant="caption"
+                sx={{ color: isSaving ? '#000000' : '#ffffff', display: 'block', mt: 0.5 }}
+              >
+                DATE: {activity.date}
+              </Typography>
             </CardContent>
           </Card>
         );
