@@ -327,8 +327,8 @@ export default function Home() {
             label="Choose to view spend or save"
             onChange={handleViewChange}
           >
-            <MenuItem value="spend">Money Spent</MenuItem>
-            <MenuItem value="save">Money Saved</MenuItem>
+            <MenuItem value="spend">Expenses (Money Spent)</MenuItem>
+            <MenuItem value="save">Income (Money Saved)</MenuItem>
           </Select>
         </FormControl>
         <FormControl sx={{ width: '300px' }}>
