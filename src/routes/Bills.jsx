@@ -1,12 +1,11 @@
 import React from 'react';
-import { Avatar, Box, Card, CardContent, Typography, Button, Grid2, useTheme, Select, MenuItem, InputLabel, FormControl, Checkbox, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Stack  } from '@mui/material';
+import { Avatar, Box, Card, CardContent, Typography, Button, Grid2, useTheme, Select, MenuItem, InputLabel, FormControl, Checkbox, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Stack, Tooltip  } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import UndoIcon from '@mui/icons-material/Undo';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined'; // Optional alternative: CloseOutlinedIcon
 import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
-import { grey } from '@mui/material/colors';
 
 export const saveToLocalStorage = (key, value) => {
     // Don't stringify strings
@@ -114,13 +113,7 @@ export default function Bills() {
         console.log('Initial sortOption value:', initial);
         return initial;
       });
-    // const [bills, setBills] = useState(loadFromLocalStorage('bills', [
-    //     { id: 1, name: 'Electricity Bill', amount: 120, category: 'Utilities', dueDate: '2025-04-05' },
-    //     { id: 2, name: 'Rent', amount: 800, category: 'Housing', dueDate: '2025-04-01' },
-    //     { id: 3, name: 'Internet Bill', amount: 60, category: 'Utilities', dueDate: '2025-04-10' },
-    //     { id: 4, name: 'Phone Bill', amount: 45, category: 'Utilities', dueDate: '2025-04-07' },
-    //     { id: 5, name: 'Gym Membership', amount: 40, category: 'Fitness', dueDate: '2025-04-03' },
-    // ]));
+
     const [paidBills, setPaidBills] = useState(loadFromLocalStorage('paidBills', {}));
     const defaultCategoryColors = {
         'Personal': '#b2dfdb',
@@ -131,12 +124,6 @@ export default function Bills() {
     const [categoryColors, setCategoryColors] = useState(
         loadFromLocalStorage('categoryColors', defaultCategoryColors)
     );
-    
-    // const [categoryColors, setCategoryColors] = useState(loadFromLocalStorage('categoryColors', {
-    //     Personal: '#b2dfdb',
-    //     Work: '#c5cae9',
-    //     Entertainment: '#f8bbd0',
-    // }));
 
     const paidBillsCount = Object.values(paidBills).filter(Boolean).length;
     const unpaidBillsCount = bills.length - paidBillsCount;
@@ -151,6 +138,7 @@ export default function Bills() {
     });
     const [editBill, setEditBill] = useState(null);
     const [deletedBills, setDeletedBills] = useState([]);
+
 
     const isFormValid = newBill.name && newBill.amount && newBill.dueDate && (
         newBill.category !== 'Other' ? newBill.category : newBill.customCategory
@@ -265,7 +253,6 @@ export default function Bills() {
                                 width: 80,
                                 height: 80,
                                 backgroundColor: 'black',
-                                border: '2px solid black',
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -278,6 +265,9 @@ export default function Bills() {
                         <Typography variant='subtitle1' color='black'>
                             Paid
                         </Typography>
+                        <Typography variant="caption" sx={{ color: 'gray', fontStyle: 'italic' }}>
+                            Number of bills paid
+                        </Typography>
                     </Box>
                 </Grid2>
                 {/* Unpaid Circle */}
@@ -288,7 +278,6 @@ export default function Bills() {
                                 width: 80,
                                 height: 80,
                                 backgroundColor: '#e1bee7',
-                                border: '2px solid black',
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -300,6 +289,9 @@ export default function Bills() {
                         </Avatar>
                         <Typography variant="subtitle1" color="black">
                             Unpaid
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'gray', fontStyle: 'italic' }}>
+                            Number of bills left to pay
                         </Typography>
                     </Box>
                 </Grid2>
@@ -338,7 +330,30 @@ export default function Bills() {
             }}>
                 {/* Use a Box with column direction to stack the cards vertically */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {sortedBills.map((bill) => (
+                    {sortedBills.map((bill) => {
+                        const dueDate = new Date(bill.dueDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                      
+                        const timeDiff = dueDate.getTime() - today.getTime();
+                        const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                      
+                        let dueText = '';
+                        let dueColor = '';
+                      
+                        if (daysDiff < 0) {
+                          dueText = `Overdue by ${Math.abs(daysDiff)} day${Math.abs(daysDiff) === 1 ? '' : 's'}`;
+                          dueColor = '#ef9a9a'; // red
+                        } else if (daysDiff === 0) {
+                          dueText = 'Due Today';
+                          dueColor = '#ffe0b2'; // orange
+                        } else {
+                          dueText = `Due in ${daysDiff} day${daysDiff === 1 ? '' : 's'}`;
+                          dueColor = '#d0f0c0'; // green
+                        }
+                    
+                    
+                    return (
                         <Card key={bill.id} sx={{ 
                             position: 'relative',
                             display: 'flex',
@@ -362,48 +377,65 @@ export default function Bills() {
                                 }}
                             />
                             {/* Delete Icon */}
-                            <DeleteIcon
+                            <HighlightOffOutlinedIcon
                                 onClick={() => handleDeleteBill(bill.id)}
                                 sx={{
                                     position: 'absolute',
                                     top: 8,
                                     right: 8,
-                                    color: 'error.main',
+                                    color: paidBills[bill.id] ? 'white' : 'black',
                                 }}
                             />
-                            <EditIcon 
+                            <EditOutlinedIcon 
                                 onClick={() => handleEditClick(bill)} 
                                 sx={{ 
                                     position: 'absolute', 
                                     top: 8, 
                                     right: 40, 
-                                    color: 'primary.main' 
+                                    color: paidBills[bill.id] ? 'white' : 'black', 
                                 }} 
                             />
                             {/* Left section: Name and Amount */}
                             <Box sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6" sx={{
+                                <Typography
+                                    variant="h6"
+                                    sx={{
                                     color: paidBills[bill.id] ? 'white' : 'black',
                                     fontWeight: 'Bold',
                                     fontSize: 17,
-                                    textDecoration: paidBills[bill.id] ? 'line-through' : 'none'
-                                }}>{bill.name}</Typography>
-                                <Typography variant="body1" sx={{ 
-                                        textDecoration: paidBills[bill.id] ? 'line-through' : 'none' ,
-                                        color: paidBills[bill.id] ? 'white' : 'black'
-                                    }}>
-                                    Amount: ${bill.amount}
+                                    textDecoration: paidBills[bill.id] ? 'line-through' : 'none',
+                                    }}
+                                >
+                                    {bill.name}: ${bill.amount}
                                 </Typography>
+                                 {/* Due Date */}
+                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+                                    <Typography variant="body2" sx={{ color: paidBills[bill.id] ? 'white' : 'black' }}>
+                                    DUE: {bill.dueDate.replace(/-/g, '/')}
+                                    </Typography>
+
+                                    <Box
+                                    sx={{
+                                        backgroundColor: dueColor,
+                                        color: 'black',
+                                        padding: '4px 10px',
+                                        borderRadius: '20px',
+                                        display: 'inline-block',
+                                    }}
+                                    >
+                                    <Typography variant="body2">{dueText}</Typography>
+                                    </Box>
+                                </Box>
                             </Box>
                             
-                            {/* Right section: Category and Due Date */}
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' , paddingRight: 10}}>
+                            {/* Right section: Category*/}
+                            <Box sx={{ position: 'absolute', bottom: 8, right: 8, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' , mt: 3.5}}>
                             {/* Category with Oval Background */}
                             <Box
                                 sx={{
                                     backgroundColor: categoryColors[bill.category] || '#cfcfcf', // Default to gray if no category match
                                     color: 'black',
-                                    padding: '4px 12px', // Padding to make the text inside spacious
+                                    padding: '4px 10px', // Padding to make the text inside spacious
                                     borderRadius: '20px', // This makes the background oval/pill-shaped
                                     display: 'inline-block', // Ensures the background wraps the text only
                                     marginBottom: 1, // Optional: Adds some space between the category and due date
@@ -412,15 +444,10 @@ export default function Bills() {
                                 <Typography variant="body2">{bill.category}</Typography>
                             </Box>
                             
-                            {/* Due Date */}
-                            <Typography variant="body2" sx={{
-                                color: paidBills[bill.id] ? 'white' : 'black',
-                            }}>
-                                Due: {bill.dueDate}
-                            </Typography>
+                           
                         </Box>
                         </Card>
-                    ))}
+                    );})}
                 </Box>
             </Box>
             <Stack 
@@ -478,9 +505,11 @@ export default function Bills() {
                         >
                             <UndoIcon sx={{ color: 'white' }} />
                         </IconButton>
+                        <Tooltip title="Restore the most recently deleted bill">
                         <Typography variant="subtitle1" sx={{ marginTop: 1 }}>
-                            Undo Delete
+                            Restore Bill
                         </Typography>
+                        </Tooltip>
                         </Box>
                 </Stack>
                 
